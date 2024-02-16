@@ -1,11 +1,44 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class Services {
   String uri = "http://192.168.0.103:4000";
   // String  uri = "http://localhost:3000";
+
+
+  Future<void> uploadPDF(BuildContext context, File _pdfFile, String name) async {
+    if (_pdfFile != null) {
+      try {
+        Reference storageReference = FirebaseStorage.instance.ref().child('pdfs/$name');
+        UploadTask uploadTask = storageReference.putFile(_pdfFile!);
+        await uploadTask.whenComplete(() => print('File Uploaded'));
+      } catch (e) {
+        print('Error uploading PDF: $e');
+        ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    } else {
+      print('No PDF file selected');
+    }
+  }
+
+  Future<String> getPdfDownloadUrl(String name) async {
+  String downloadUrl = '';
+  try {
+    Reference storageReference = FirebaseStorage.instance.ref().child('pdfs/$name');
+    downloadUrl = await storageReference.getDownloadURL();
+  } catch (e) {
+    print('Error getting download URL: $e');
+  }
+  return downloadUrl;
+}
+
+
+
   Future contactServer(BuildContext context,String link) async {
     
     try {
@@ -32,7 +65,7 @@ class Services {
 
           // Convert the data array to a string
           stringData = String.fromCharCodes(data);
-          // print(stringData);
+          print("STring data from dart api call&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& $stringData");
           // print(res.body);
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text("Success")));
@@ -56,12 +89,14 @@ class Services {
         onSuccess();
         break;
       case 400:
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(jsonDecode(response.body)['msg'])));
+        { print(response.body);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(jsonDecode(response.body)['msg'])));}
         break;
       case 500:
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(jsonDecode(response.body)['error'])));
+        { print(response.body);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(jsonDecode(response.body)['error'])));}
         break;
       default:
         {

@@ -46,7 +46,12 @@ app.post("/demo", async (req, res) => {
       // }
       console.log('Happening');
       const { link } = req.body
+      // const pdfFile = req.files.pdf_file;
+      // const filePath = `${__dirname}/uploads/${pdfFile.name}`;
+      // await pdfFile.mv(link);
+      
       console.log(link)
+      console.log("documentPath")
       
       // const data = req.body;
       // const att = data.link;

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -15,10 +16,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<File> files = [];
+  List<String> fileNames = [];
   Future<List<File>> pickFile(BuildContext context) async {
     FilePickerResult? result =
         await FilePicker.platform.pickFiles(allowMultiple: true);
     if (result != null) {
+      fileNames = result.names.map((name) => name!).toList();
       files = result.paths.map((path) => File(path!)).toList();
     } else {
       // ignore: use_build_context_synchronously
@@ -29,11 +32,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void callPickFiles() async {
+    Services services = Services();
     await pickFile(context);
     for (int i = 0; i < files.length; i++) {
-      readFileContent(files[i].path).then((content) {
+      await services.uploadPDF(context, files[i], fileNames[i]);
+      String singleFilePath = await services.getPdfDownloadUrl(fileNames[i]);
+      print("{{{{{{{{{{{{{{{{{{{{{$singleFilePath}}}}}}}}}}}}}}}}}}}}}");
+      readFileContent(singleFilePath).then((content) {
+        print("String data from dart function call000000000000000000000000000000000000000 $content");
         fileContent.add(content);
         predictions = predict(content);
+        setState(() {});
       }).catchError((error) {
         print(error.toString());
         ScaffoldMessenger.of(context).showSnackBar(
@@ -41,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       
     }
-    setState(() {});
   }
 
   Future<String> readFileContent(String path) async {
@@ -121,6 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -140,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  predictions = predict("mining");
+                  predictions = predict("mining"); //1
                   setState(() {});
                   print(
                       "_________________________++++++++++++++++++++++++++++++++++++++++");
@@ -154,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 shrinkWrap: true,
                 itemCount: fileContent.length,
                 itemBuilder: (context, index) {
-                  return Text(fileContent[index]);
+                  return Text("file content ^^^^^^^^^^^^^^^^^^^^^^${fileContent[index]}");
                 },
               ),
             ],
