@@ -10,11 +10,11 @@ class Services {
   // String  uri = "http://localhost:3000";
 
 
-  Future<void> uploadPDF(BuildContext context, File _pdfFile, String name) async {
+  Future<void> uploadPDF(BuildContext context, File? _pdfFile, String name) async {
     if (_pdfFile != null) {
       try {
         Reference storageReference = FirebaseStorage.instance.ref().child('pdfs/$name');
-        UploadTask uploadTask = storageReference.putFile(_pdfFile!);
+        UploadTask uploadTask = storageReference.putFile(_pdfFile);
         await uploadTask.whenComplete(() => print('File Uploaded'));
       } catch (e) {
         print('Error uploading PDF: $e');
@@ -44,6 +44,7 @@ class Services {
     try {
       // String link =
       //   "C:/Users/Vighnesh/Flutter/Projects/ml_project/assets/demo.pdf";
+      print("Dart api run");
       http.Response res = await http.post(
         Uri.parse('$uri/demo'),
         headers: {
@@ -53,6 +54,7 @@ class Services {
           "link":link,
         }),
       );
+      print("Dart api finish");
       String stringData = "";
       // ignore: use_build_context_synchronously
       httpErrorHandle(
@@ -73,6 +75,52 @@ class Services {
       );
       return stringData;
     } catch (e) {
+      print("Error in the services catch block");
+      print(e.toString());
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
+  Future contactServerForText(BuildContext context,String link) async {
+    
+    try {
+      // String link =
+      //   "C:/Users/Vighnesh/Flutter/Projects/ml_project/assets/demo.pdf";
+      print("Dart api run");
+      http.Response res = await http.post(
+        Uri.parse('$uri/demoGet'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({
+          "link":link,
+        }),
+      );
+      print("Dart api finish");
+      String stringData = "";
+      // ignore: use_build_context_synchronously
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          Map<String, dynamic> jsonMap = jsonDecode(res.body);
+          // Extract the data array from the "msg" object
+          List<int> data = List<int>.from(jsonMap['msg']['data']);
+
+          // Convert the data array to a string
+          stringData = String.fromCharCodes(data);
+          print("STring data from dart api call&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& $stringData");
+          // print(res.body);
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text("Success")));
+        },
+      );
+      return stringData;
+    } catch (e) {
+      print("Error in the services catch block");
+      print(e.toString());
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
