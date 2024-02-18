@@ -1,5 +1,7 @@
 # import io
+from io import BytesIO
 import sys
+from docx import Document
 # from PyPDF2 import PdfFileReader, PdfReader
 # from docx import Document
 # from pptx import Presentation
@@ -91,14 +93,55 @@ def read_pdf_from_url(url):
         # Iterate through each page and extract text
         for page_num in range(pdf_document.page_count):
             page = pdf_document.load_page(page_num)
-            text += page.get_text()
-        return text
+            text += page.get_text().encode("utf-8").decode("utf-8") #
+        text = text.encode('utf-8', 'ignore').decode('utf-8') #
+        # print(text)
+        # cleaned_text = ''.join(char for char in text if char.isprintable())
+        cleaned_str = remove_non_ascii_chars(text)
+        return cleaned_str.encode('utf-8')
+        
+        # send_text_to_nodejs_api(cleaned_text)
+        # return cleaned_text
+
+        # return text
     else:
         print(f"Failed to fetch PDF from URL. Status code: {response.status_code}")
         return "None"
+    
+def read_online_word_document(url):
+    # Send a GET request to fetch the Word document
+    response = requests.get(url)
+    
+    # Check if the request was successful (status code 200)
+    if response.status_code == 200:
+        # Read the content of the Word document
+        docx_content = response.content
+        
+        # Create a BytesIO object to work with in-memory binary data
+        docx_file = BytesIO(docx_content)
+        
+        # Load the Word document using python-docx
+        doc = Document(docx_file)
+        
+        # Extract text from the Word document
+        text = ""
+        for paragraph in doc.paragraphs:
+            text += paragraph.text + "\n"
+        
+        cleaned_str = remove_non_ascii_chars(text)
+        return cleaned_str.encode('utf-8')
+    else:
+        print(f"Failed to fetch Word document. Status code: {response.status_code}")
+        return None
 
 
+def remove_non_ascii_chars(input_str):
+    """
+    Remove non-ASCII characters from the input string.
+    """
+    return ''.join(char for char in input_str if ord(char) < 128)
 
+    
 # Function to extract text from any supported document type
 # def extract_text_from_document(document_path):
 #     file_extension = os.path.splitext(document_path)[1].lower()
@@ -116,14 +159,39 @@ def read_pdf_from_url(url):
 
 
 if __name__ == "__main__":
-    document_path = sys.argv[1]  # Replace with the path to your document
-    # extracted_text = extract_text_from_document(document_path)
-    extracted_text = read_pdf_from_url(document_path)
-    if extracted_text is not None:
-    # Print the extracted text, ignoring encoding errors
-        print(extracted_text.encode('utf-8', 'ignore').decode('utf-8'))
+    document_path = sys.argv[1]
+    print("Extension")  # Replace with the path to your document
+
+    filename = document_path.split('/')[-1]
+    
+    # Split the filename by '.' and get the last part as the file extension
+    file_extension = filename.split('.')[-1]
+    file_extension = file_extension[0:4]
+    print(file_extension)
+    extracted_text = ""
+
+    if file_extension == 'pdf?':
+        extracted_text = read_pdf_from_url(document_path)
+    elif file_extension == 'docx':
+        extracted_text = read_online_word_document(document_path)
+    elif file_extension == 'xlsx':
+        print("The URL points to an Excel file.")
     else:
-        print("Failed to read PDF from URL.")
+        print("The file type is unknown.")
+    # print(document_path)
+    # extracted_text = extract_text_from_document(document_path)
+    # extracted_text = read_pdf_from_url(document_path)
+    
+
+
+    # extracted_text = extracted_text.encode('utf-8', 'ignore').decode('utf-8')
+    # print("Exectued")
+    print(extracted_text)
+    # if extracted_text is not None:
+    # # Print the extracted text, ignoring encoding errors
+    #     print(extracted_text.encode('utf-8', 'ignore').decode('utf-8'))
+    # else:
+    #     print("Failed to read PDF from URL.")
 
 
 # from PyPDF2 import PdfReader
