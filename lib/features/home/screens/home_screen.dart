@@ -5,7 +5,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ml_project/constants/constants.dart';
-import 'package:ml_project/features/auth/screens/services.dart';
+import 'package:ml_project/features/auth/services/services.dart';
+import 'package:ml_project/features/home/screens/fetch_screen.dart';
 import 'package:ml_project/models/document_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,6 +15,7 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+
 // AIDS - 0, DMBI - 1, EHF - 2, WEBX - 3
 class _HomeScreenState extends State<HomeScreen> {
   List<File> files = [];
@@ -45,19 +47,21 @@ class _HomeScreenState extends State<HomeScreen> {
       String singleFilePath = await services.getPdfDownloadUrl(fileNames[i]);
       print("{{{{{{{{{{{{{{{{{{{{{$singleFilePath}}}}}}}}}}}}}}}}}}}}}");
       await readFileContent(singleFilePath).then((content) {
-        print("String data from dart function call000000000000000000000000000000000000000 $content");
+        print(
+            "String data from dart function call000000000000000000000000000000000000000 $content");
         fileContent.add(content);
         predictions = predict(content);
-        uploadToFirebase(Doc(fileName: fileNames[i], type: "pdf", fileUrl: singleFilePath, prediction: Constants.subjects[predictions]));
+        uploadToFirebase(Doc(
+            fileName: fileNames[i],
+            type: "pdf",
+            fileUrl: singleFilePath,
+            prediction: Constants.subjects[predictions]));
         setState(() {});
       }).catchError((error) {
         print("Here Error in homeScreen${error.toString()}");
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error.toString())));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error.toString())));
       });
-
-
-      
     }
   }
 
@@ -144,6 +148,13 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               ElevatedButton(
                 onPressed: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const FetchScreen()));
+                },
+                child: const Text("Go to Fetch"),
+              ),
+              ElevatedButton(
+                onPressed: () {
                   callPickFiles();
                 },
                 child: const Text("Upload"),
@@ -174,7 +185,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 shrinkWrap: true,
                 itemCount: fileContent.length,
                 itemBuilder: (context, index) {
-                  return Text("file content ^^^^^^^^^^^^^^^^^^^^^^${fileContent[index]}");
+                  return Text(
+                      "file content ^^^^^^^^^^^^^^^^^^^^^^${fileContent[index]}");
                 },
               ),
             ],

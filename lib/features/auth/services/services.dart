@@ -21,7 +21,7 @@ class Services {
   Future<void> uploadPDF(BuildContext context, File? _pdfFile, String name) async {
     if (_pdfFile != null) {
       try {
-        Reference storageReference = FirebaseStorage.instance.ref().child('pdfs/$name');
+        Reference storageReference = FirebaseStorage.instance.ref().child('docs/$name');
         UploadTask uploadTask = storageReference.putFile(_pdfFile);
         await uploadTask.whenComplete(() => print('File Uploaded'));
       } catch (e) {

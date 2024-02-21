@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ml_project/features/auth/screens/services.dart';
+import 'package:ml_project/features/auth/services/services.dart';
 
 class GetStartedScreen extends StatefulWidget {
   const GetStartedScreen({super.key});
