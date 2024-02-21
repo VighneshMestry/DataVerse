@@ -1,14 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ml_project/models/document_model.dart';
 
 class Services {
   String uri = "http://192.168.0.103:4000";
   // String  uri = "http://localhost:3000";
 
+  final FirebaseFirestore _firestore =  FirebaseFirestore.instance;
+
+
+  Future uploadToFirebase(Doc doc) async {
+    return await _firestore.collection("documents").add(doc.toMap());
+  }
 
   Future<void> uploadPDF(BuildContext context, File? _pdfFile, String name) async {
     if (_pdfFile != null) {

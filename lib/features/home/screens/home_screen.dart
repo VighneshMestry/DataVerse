@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/features/auth/screens/services.dart';
+import 'package:ml_project/models/document_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,7 +14,7 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
-
+// AIDS - 0, DMBI - 1, EHF - 2, WEBX - 3
 class _HomeScreenState extends State<HomeScreen> {
   List<File> files = [];
   List<String> fileNames = [];
@@ -30,6 +32,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return files;
   }
 
+  void uploadToFirebase(Doc doc) async {
+    Services services = Services();
+    await services.uploadToFirebase(doc);
+  }
+
   void callPickFiles() async {
     Services services = Services();
     await pickFile(context);
@@ -41,12 +48,15 @@ class _HomeScreenState extends State<HomeScreen> {
         print("String data from dart function call000000000000000000000000000000000000000 $content");
         fileContent.add(content);
         predictions = predict(content);
+        uploadToFirebase(Doc(fileName: fileNames[i], type: "pdf", fileUrl: singleFilePath, prediction: Constants.subjects[predictions]));
         setState(() {});
       }).catchError((error) {
         print("Here Error in homeScreen${error.toString()}");
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(error.toString())));
       });
+
+
       
     }
   }
@@ -149,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  predictions = predict("mining"); //1
+                  predictions = predict("hacking"); //1
                   setState(() {});
                   print(
                       "_________________________++++++++++++++++++++++++++++++++++++++++");
