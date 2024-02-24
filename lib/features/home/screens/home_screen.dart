@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/features/auth/services/services.dart';
 import 'package:ml_project/features/home/screens/fetch_screen.dart';
+import 'package:ml_project/features/home/screens/file_upload_screen.dart';
+import 'package:ml_project/features/home/widgets/dialog.dart';
 import 'package:ml_project/models/document_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -151,8 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const FetchScreen()));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const FetchScreen()));
                 },
                 child: const Text("Go to Fetch"),
               ),
@@ -171,7 +173,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Text(files[index].path);
                 },
               ),
-
               ListView.builder(
                 // scrollDirection: Axis.vertical,
                 physics: const NeverScrollableScrollPhysics(),
@@ -181,7 +182,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Text(downloadUrls[index]);
                 },
               ),
-
               ElevatedButton(
                 onPressed: () {
                   predictions = predict("hacking"); //1
@@ -204,6 +204,61 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ],
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.white,
+        onPressed: () {
+          showDialog(
+              barrierDismissible: true,
+              context: context,
+              builder: (context) {
+                return Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(40),
+                          topRight: Radius.circular(40),
+                        ),
+                      ),
+                      height: 200,
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.only( left: 12.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Text("Subject Upload", style: TextStyle(color: Colors.black, fontSize: 22, decoration: TextDecoration.none, fontWeight: FontWeight.normal)),
+                            // Text("Files Upload", style: TextStyle(color: Colors.black, fontSize: 22, decoration: TextDecoration.none, fontWeight: FontWeight.normal)),
+                            // Text("Scan", style: TextStyle(color: Colors.black, fontSize: 22, decoration: TextDecoration.none, fontWeight: FontWeight.normal)),
+                            TextButton(onPressed: (){}, child: const Text("Subject Upload", style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.normal)),style: TextButton.styleFrom(minimumSize: const Size(double.infinity, 30)),),
+                            TextButton(onPressed: (){ Navigator.of(context).push(MaterialPageRoute(builder: (context) => FileUploadScreen()));}, child: const Text("Files Upload", style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.normal)), style: TextButton.styleFrom(minimumSize: const Size(double.infinity, 30)),),
+                            TextButton(onPressed: (){}, child: const Text("Scan", style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.normal)),style: TextButton.styleFrom(minimumSize: const Size(double.infinity, 30)),),
+                            
+                          ],
+                        ),
+                      )),
+                );
+              });
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Container(
+            padding: const EdgeInsets.all(5.0),
+            height: 50,
+            width: 50,
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(
+                  color: Colors.grey.shade200, spreadRadius: 1, blurRadius: 2)
+            ], color: Colors.white, shape: BoxShape.circle),
+            child: const Icon(
+              Icons.add,
+              size: 32,
+            ),
           ),
         ),
       ),
