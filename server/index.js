@@ -34,9 +34,9 @@ app.listen(PORT, "0.0.0.0", () => {
 //CREATING AN API
 // http://<youripaddress>/hello-world
 
-app.get("/hello-world", (req, res) => {
-  res.json({hi : "Hello World"});
-});
+// app.get("/hello-world", (req, res) => {
+//   res.json({hi : "Hello World"});
+// });
 
 app.post("/demo", async (req, res) => {
   try {
@@ -50,7 +50,7 @@ app.post("/demo", async (req, res) => {
       // const filePath = `${__dirname}/uploads/${pdfFile.name}`;
       // await pdfFile.mv(link);
       
-      console.log(link)
+      console.log("link " + link)
       console.log("documentPath")
 
       const childPython = spawn('python', ['pdf_text_extraction.py', link]);

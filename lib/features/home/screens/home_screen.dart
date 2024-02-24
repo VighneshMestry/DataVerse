@@ -20,6 +20,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<File> files = [];
   List<String> fileNames = [];
+  List<String> downloadUrls = [];
+
   Future<List<File>> pickFile(BuildContext context) async {
     FilePickerResult? result =
         await FilePicker.platform.pickFiles(allowMultiple: true);
@@ -49,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
       await readFileContent(singleFilePath).then((content) {
         print(
             "String data from dart function call000000000000000000000000000000000000000 $content");
+        downloadUrls.add(singleFilePath);
         fileContent.add(content);
         predictions = predict(content);
         uploadToFirebase(Doc(
@@ -168,6 +171,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Text(files[index].path);
                 },
               ),
+
+              ListView.builder(
+                // scrollDirection: Axis.vertical,
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: downloadUrls.length,
+                itemBuilder: (context, index) {
+                  return Text(downloadUrls[index]);
+                },
+              ),
+
               ElevatedButton(
                 onPressed: () {
                   predictions = predict("hacking"); //1

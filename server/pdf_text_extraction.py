@@ -6,7 +6,7 @@ from docx import Document
 # from docx import Document
 # from pptx import Presentation
 # import openpyxl
-# import os
+import os
 import fitz
 import pdfplumber
 
@@ -160,16 +160,31 @@ def remove_non_ascii_chars(input_str):
 
 if __name__ == "__main__":
     document_path = sys.argv[1]
-    print("Extension")  # Replace with the path to your document
+    print("Document path is " + document_path)  # Replace with the path to your document
+    # filename = document_path.split('/')[-1]
+    
+    # # Split the filename by '.' and get the last part as the file extension
+    # file_extension = filename.split('.')[-1]
+    # file_extension = file_extension[0:4]
+    # print(file_extension)
+    extracted_text = ""
+    # if file_extension == 'pdf?':
+    #     extracted_text = read_pdf_from_url(document_path)
+    # elif file_extension == 'docx':
+    #     extracted_text = read_online_word_document(document_path)
+    # elif file_extension == 'xlsx':
+    #     print("The URL points to an Excel file.")
+    # else:
+    #     print("The file type is unknown.")
 
     filename = document_path.split('/')[-1]
     
     # Split the filename by '.' and get the last part as the file extension
     file_extension = filename.split('.')[-1]
     file_extension = file_extension[0:4]
-    print(file_extension)
-    extracted_text = ""
-
+    
+    # file_extension =  file_extension.lower()
+    print("File extension is " + file_extension)
     if file_extension == 'pdf?':
         extracted_text = read_pdf_from_url(document_path)
     elif file_extension == 'docx':
@@ -178,6 +193,8 @@ if __name__ == "__main__":
         print("The URL points to an Excel file.")
     else:
         print("The file type is unknown.")
+
+
     # print(document_path)
     # extracted_text = extract_text_from_document(document_path)
     # extracted_text = read_pdf_from_url(document_path)

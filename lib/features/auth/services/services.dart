@@ -37,7 +37,7 @@ class Services {
   Future<String> getPdfDownloadUrl(String name) async {
   String downloadUrl = '';
   try {
-    Reference storageReference = FirebaseStorage.instance.ref().child('pdfs/$name');
+    Reference storageReference = FirebaseStorage.instance.ref().child('docs/$name');
     downloadUrl = await storageReference.getDownloadURL();
   } catch (e) {
     print('Error getting download URL: $e');
