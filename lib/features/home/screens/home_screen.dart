@@ -81,8 +81,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    notificationServices.requestNotificationPermission();
     loadModel();
+    notificationServices.requestNotificationPermission();
+    notificationServices.firebaseInit(context);
+    notificationServices.setupInteractMessage(context);
+    notificationServices.getDeviceToken().then((value){
+        print('device token');
+        print(value);
+      
+    });
   }
 
   Future<void> loadModel() async {
