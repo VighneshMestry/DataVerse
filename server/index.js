@@ -54,10 +54,12 @@ app.post("/demo", async (req, res) => {
       console.log("documentPath")
 
       const childPython = spawn('python', ['pdf_text_extraction.py', link]);
+
+      let responseData;
       childPython.stdout.on('data', (data) => {
           console.log("Still not running")
           // console.log(`The data in index.js ${data}`)
-          res.json({msg: data})
+          responseData = data
       });
       
       childPython.stderr.on('data', (data) => {
@@ -66,6 +68,7 @@ app.post("/demo", async (req, res) => {
       
       childPython.on('close', (code) => {
           console.log(`child process exited with code ${code}`);
+          res.json({ msg: responseData });
       });
       // res.json({msg: resultText})
       

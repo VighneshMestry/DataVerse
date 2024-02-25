@@ -8,7 +8,6 @@ import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/features/auth/services/services.dart';
 import 'package:ml_project/features/home/screens/fetch_screen.dart';
 import 'package:ml_project/features/home/screens/file_upload_screen.dart';
-import 'package:ml_project/features/home/widgets/dialog.dart';
 import 'package:ml_project/models/document_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<String> fileNames = [];
   List<String> downloadUrls = [];
 
-  Future<List<File>> pickFile(BuildContext context) async {
+  Future<List<String>> pickFile(BuildContext context) async {
     FilePickerResult? result =
         await FilePicker.platform.pickFiles(allowMultiple: true);
     if (result != null) {
@@ -35,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Upload Cancel")));
     }
-    return files;
+    return fileNames;
   }
 
   void uploadToFirebase(Doc doc) async {
