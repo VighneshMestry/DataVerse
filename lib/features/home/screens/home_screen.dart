@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ml_project/common/notifications.dart';
 import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/features/auth/services/services.dart';
 import 'package:ml_project/features/home/screens/fetch_screen.dart';
@@ -23,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<String> fileNames = [];
   List<String> downloadUrls = [];
 
-  Future<List<String>> pickFile(BuildContext context) async {
+  Future<List<File>> pickFile(BuildContext context) async {
     FilePickerResult? result =
         await FilePicker.platform.pickFiles(allowMultiple: true);
     if (result != null) {
@@ -34,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Upload Cancel")));
     }
-    return fileNames;
+    return files;
   }
 
   void uploadToFirebase(Doc doc) async {
@@ -75,10 +76,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   dynamic _model;
+  NotificationServices notificationServices = NotificationServices();
 
   @override
   void initState() {
     super.initState();
+    notificationServices.requestNotificationPermission();
     loadModel();
   }
 
