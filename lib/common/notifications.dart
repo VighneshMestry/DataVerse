@@ -6,6 +6,41 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:ml_project/features/home/screens/file_upload_screen.dart';
 
+  // void initState() {
+  //   super.initState();
+  //   loadModel();
+  //   notificationServices.requestNotificationPermission();
+  //   notificationServices.firebaseInit(context);
+  //   notificationServices.setupInteractMessage(context);
+  //   notificationServices.getDeviceToken().then((value) {
+  //     print('device token');
+  //     print(value);
+  //   });
+  // }
+
+  // ElevatedButton(
+  //               onPressed: () {
+  //                 notificationServices.getDeviceToken().then((value) async {
+  //                   var data = {
+  //                     'to': value.toString(),
+  //                     'priority': 'high',
+  //                     'notification': {
+  //                       'title': 'Vighnesh Mestry',
+  //                       'body': 'how are you?'
+  //                     },
+  //                     'data': {'type': 'msg', 'id': '12345'}
+  //                   };
+  //                   await http
+  //                       .post(Uri.parse("https://fcm.googleapis.com/fcm/send"), body: jsonEncode(data), headers: {
+  //                     'Content-type': 'application/json; charset=UTF-8',
+  //                     'Authorization':
+  //                         'key=AAAA2r-5EpQ:APA91bEQzKZWjSa67I9OViUfkDS43vlfSDr1GN4zmQHknKyRWZzjfa72zFEMOnqFASeI-GMrEMjI7gGaQXoVK6BcLq3iq-zKptaIXL03SR-bWPd3JDK6jXZo-xAFopNYGBB43m-8ffjo'
+  //                   });
+  //                 });
+  //               },
+  //               child: const Text("Send Notification"),
+  //             ),
+
 class NotificationServices {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
@@ -33,28 +68,6 @@ class NotificationServices {
         showNotification(message);
       }
     });
-  }
-
-  Future<void> setupInteractMessage(BuildContext context) async {
-    RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
-
-    if (initialMessage != null) {
-      // ignore: use_build_context_synchronously
-      handleMessage(context, initialMessage);
-    }
-
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      handleMessage(context, message);
-    });
-  }
-
-  void handleMessage(BuildContext context, RemoteMessage message) {
-    if (message.data['type'] == 'msg') {
-        // ignore: use_build_context_synchronously
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const FileUploadScreen()));
-      }
   }
 
   Future<void> showNotification(RemoteMessage message) async {
@@ -93,8 +106,30 @@ class NotificationServices {
     });
   }
 
+  Future<void> setupInteractMessage(BuildContext context) async {
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      // ignore: use_build_context_synchronously
+      handleMessage(context, initialMessage);
+    }
+
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      handleMessage(context, message);
+    });
+  }
+
+  void handleMessage(BuildContext context, RemoteMessage message) {
+    if (message.data['type'] == 'msg') {
+      // ignore: use_build_context_synchronously
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const FileUploadScreen()));
+    }
+  }
+
   void requestNotificationPermission() async {
-    NotificationSettings settings = await messaging.requestPermission(
+    await messaging.requestPermission(
       alert: true,
       announcement: true,
       badge: true,
@@ -102,13 +137,6 @@ class NotificationServices {
       carPlay: true,
       criticalAlert: true,
     );
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print(
-          "The user has given the permission0000000000000000000000000000000000000000000000000000");
-    } else {
-      print(
-          "The user has declined the permission00000000000000000000000000000000000000000000000000000000000");
-    }
   }
 
   Future<String> getDeviceToken() async {

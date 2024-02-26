@@ -4,9 +4,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/features/auth/services/services.dart';
 import 'package:ml_project/models/document_model.dart';
+import 'package:uuid/uuid.dart';
 
 class FileUploadScreen extends ConsumerStatefulWidget {
   const FileUploadScreen({super.key});
@@ -46,11 +48,15 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
           downloadUrls.add(singleFilePath);
           fileContent.add(content);
           predictions = predict(content);
+          final docId = const Uuid().v1();
           await ref.read(servicesProvider.notifier).uploadToFirebase(Doc(
-              fileName: fileNames[i],
-              type: "pdf",
-              fileUrl: singleFilePath,
-              prediction: Constants.subjects[predictions]));
+            fileName: fileNames[i],
+            docId: docId,
+            type: "pdf",
+            fileUrl: singleFilePath,
+            prediction: Constants.subjectTypes[predictions],
+            createdAt: DateFormat("dd-MM-yyyy").format(DateTime.now())
+          ),);
           setState(() {});
         }).catchError((error) {
           ScaffoldMessenger.of(context)

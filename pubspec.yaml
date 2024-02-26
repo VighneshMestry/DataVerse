@@ -44,6 +44,8 @@ dependencies:
   firebase_messaging: ^14.7.16
   flutter_local_notifications: ^16.3.2
   app_settings: ^4.2.0
+  intl: ^0.19.0  # Used to get the current date time in required format
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +74,7 @@ flutter:
     - assets/naive_bayes_model.pkl
     - assets/multinomial_naive_bayes_model.json
     - assets/demo.pdf
+    - assets/subjectBackgroundImages/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

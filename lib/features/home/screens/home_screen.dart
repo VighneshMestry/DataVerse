@@ -4,12 +4,14 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:ml_project/common/notifications.dart';
 import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/features/auth/services/services.dart';
 import 'package:ml_project/features/home/screens/fetch_screen.dart';
 import 'package:ml_project/features/home/screens/file_upload_screen.dart';
 import 'package:ml_project/models/document_model.dart';
+import 'package:uuid/uuid.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -47,23 +49,30 @@ class _HomeScreenState extends State<HomeScreen> {
     Services services = Services();
     await pickFile(context);
     for (int i = 0; i < files.length; i++) {
+      // ignore: use_build_context_synchronously
       await services.uploadPDF(context, files[i], fileNames[i]);
       String singleFilePath = await services.getPdfDownloadUrl(fileNames[i]);
-      print("{{{{{{{{{{{{{{{{{{{{{$singleFilePath}}}}}}}}}}}}}}}}}}}}}");
+      // print("{{{{{{{{{{{{{{{{{{{{{$singleFilePath}}}}}}}}}}}}}}}}}}}}}");
       await readFileContent(singleFilePath).then((content) {
-        print(
-            "String data from dart function call000000000000000000000000000000000000000 $content");
+        // print(
+        //     "String data from dart function call000000000000000000000000000000000000000 $content");
         downloadUrls.add(singleFilePath);
         fileContent.add(content);
         predictions = predict(content);
-        uploadToFirebase(Doc(
+        final docId = const Uuid().v1();
+        uploadToFirebase(
+          Doc(
             fileName: fileNames[i],
+            docId: docId,
             type: "pdf",
             fileUrl: singleFilePath,
-            prediction: Constants.subjects[predictions]));
+            prediction: Constants.subjectTypes[predictions],
+            createdAt: DateFormat("dd-MM-yyyy").format(DateTime.now())
+          ),
+        );
         setState(() {});
       }).catchError((error) {
-        print("Here Error in homeScreen${error.toString()}");
+        // print("Here Error in homeScreen${error.toString()}");
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(error.toString())));
       });
@@ -81,15 +90,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    loadModel();
-    notificationServices.requestNotificationPermission();
-    notificationServices.firebaseInit(context);
-    notificationServices.setupInteractMessage(context);
-    notificationServices.getDeviceToken().then((value){
-        print('device token');
-        print(value);
-      
-    });
   }
 
   Future<void> loadModel() async {
@@ -195,9 +195,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   predictions = predict("hacking"); //1
                   setState(() {});
-                  print(
-                      "_________________________++++++++++++++++++++++++++++++++++++++++");
-                  print(predictions);
                 },
                 child: const Text("Predict"),
               ),
@@ -236,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 200,
                       width: double.infinity,
                       child: Padding(
-                        padding: const EdgeInsets.only( left: 12.0),
+                        padding: const EdgeInsets.only(left: 12.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,10 +241,40 @@ class _HomeScreenState extends State<HomeScreen> {
                             // Text("Subject Upload", style: TextStyle(color: Colors.black, fontSize: 22, decoration: TextDecoration.none, fontWeight: FontWeight.normal)),
                             // Text("Files Upload", style: TextStyle(color: Colors.black, fontSize: 22, decoration: TextDecoration.none, fontWeight: FontWeight.normal)),
                             // Text("Scan", style: TextStyle(color: Colors.black, fontSize: 22, decoration: TextDecoration.none, fontWeight: FontWeight.normal)),
-                            TextButton(onPressed: (){}, child: const Text("Subject Upload", style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.normal)),style: TextButton.styleFrom(minimumSize: const Size(double.infinity, 30)),),
-                            TextButton(onPressed: (){ Navigator.of(context).push(MaterialPageRoute(builder: (context) => FileUploadScreen()));}, child: const Text("Files Upload", style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.normal)), style: TextButton.styleFrom(minimumSize: const Size(double.infinity, 30)),),
-                            TextButton(onPressed: (){}, child: const Text("Scan", style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.normal)),style: TextButton.styleFrom(minimumSize: const Size(double.infinity, 30)),),
-                            
+                            TextButton(
+                              onPressed: () {},
+                              style: TextButton.styleFrom(
+                                  minimumSize: const Size(double.infinity, 30)),
+                              child: const Text("Subject Upload",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.normal)),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        const FileUploadScreen()));
+                              },
+                              style: TextButton.styleFrom(
+                                  minimumSize: const Size(double.infinity, 30)),
+                              child: const Text("Files Upload",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.normal)),
+                            ),
+                            TextButton(
+                              onPressed: () {},
+                              style: TextButton.styleFrom(
+                                  minimumSize: const Size(double.infinity, 30)),
+                              child: const Text("Scan",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.normal)),
+                            ),
                           ],
                         ),
                       )),
