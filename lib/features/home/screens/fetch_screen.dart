@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/common/subject_card.dart';
 import 'package:ml_project/constants/constants.dart';
-import 'package:ml_project/features/home/services/fetch_services.dart';
 
 class FetchScreen extends ConsumerWidget {
   const FetchScreen({super.key});
