@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/features/auth/repository/auth_repository.dart';
+import 'package:ml_project/models/user_model.dart';
 
 final authControllerProvider = StateNotifierProvider<AuthController, bool>(
   (ref) => AuthController(
@@ -7,6 +9,11 @@ final authControllerProvider = StateNotifierProvider<AuthController, bool>(
     ref: ref,
   ),
 );
+
+final authStateChangeProvider = StreamProvider((ref) {
+  final authController = ref.watch(authControllerProvider.notifier);
+  return authController.authStateChange;
+});
 
 class AuthController extends StateNotifier<bool> {
   final AuthRepository _authRepository;
@@ -17,9 +24,18 @@ class AuthController extends StateNotifier<bool> {
         _authRepository = authRepository,
         super(false);
 
+  Stream<User?> get authStateChange => _authRepository.authStateChange;
+
   void signInWithGoogle() async {
-    _ref.read(userProvider.notifier).update((state) => null);
     final user = await _authRepository.signInWithGoogle();
     _ref.read(userProvider.notifier).update((state) => user);
+  }
+
+  Stream<UserModel> getUserData(String uid) {
+    return _authRepository.getUserData(uid);
+  }
+
+  void logOut() async {
+    _authRepository.logOut();
   }
 }

@@ -1,11 +1,9 @@
-import 'package:ml_project/models/subject_model.dart';
-
 class UserModel {
   final String name;
   final String profilePic;
   final String uid;
   final bool isAuthenticated;
-  final List<Subject> subject;
+  final List<String> subject;
   UserModel({
     required this.name,
     required this.profilePic,
@@ -19,7 +17,7 @@ class UserModel {
     String? profilePic,
     String? uid,
     bool? isAuthenticated,
-    List<Subject>? subject,
+    List<String>? subject,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -36,7 +34,7 @@ class UserModel {
       'profilePic': profilePic,
       'uid': uid,
       'isAuthenticated': isAuthenticated,
-      'subject': subject.map((x) => x.toMap()).toList(),
+      'subject': subject,
     };
   }
 
@@ -46,12 +44,7 @@ class UserModel {
       profilePic: map['profilePic'] as String,
       uid: map['uid'] as String,
       isAuthenticated: map['isAuthenticated'] as bool,
-      subject: List<Subject>.from((map['subject'] as List<int>).map<Subject>((x) => Subject.fromMap(x as Map<String,dynamic>),),),
+      subject: List<String>.from((map['subject']),)
     );
-  }
-
-  @override
-  String toString() {
-    return 'UserModel(name: $name, profilePic: $profilePic, uid: $uid, isAuthenticated: $isAuthenticated, subject: $subject)';
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/common/subject_card.dart';
 import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/features/home/screens/file_upload_screen.dart';
+import 'package:ml_project/features/home/screens/my_subject_docs_display.dart';
 
 class FetchScreen extends ConsumerWidget {
   const FetchScreen({super.key});
@@ -43,9 +44,21 @@ class FetchScreen extends ConsumerWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: Constants.defaultSubjects.length,
                 itemBuilder: (context, index) {
-                  return SubjectCard(
-                    subject: Constants.defaultSubjects[index],
-                    color: Constants.subjectColors[index],
+                  return GestureDetector(
+                    onTap: () => {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MySubjectDocsDisplayScreen(
+                            subject: Constants.defaultSubjects[index],
+                          ),
+                        ),
+                      ),
+                    },
+                    child: SubjectCard(
+                      subject: Constants.defaultSubjects[index],
+                      color: Constants.subjectColors[index],
+                    ),
                   );
                 },
               ),
@@ -69,7 +82,8 @@ class FetchScreen extends ConsumerWidget {
         height: 70,
         width: 70,
         child: FloatingActionButton(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           backgroundColor: Colors.white,
           onPressed: () {
             showDialog(

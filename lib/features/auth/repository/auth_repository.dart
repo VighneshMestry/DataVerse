@@ -28,8 +28,11 @@ class AuthRepository {
 
   CollectionReference get _users => _firestore.collection("users");
 
+  Stream<User?> get authStateChange => _auth.authStateChanges();
+
   Future<UserModel> signInWithGoogle() async {
     try {
+      print("1111111111111111111111111111111111111111111111111111");
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       final googleAuth = await googleUser?.authentication;
 
@@ -42,7 +45,7 @@ class AuthRepository {
           await _auth.signInWithCredential(credential);
 
       UserModel userModel;
-
+      print("2222222222222222222222222222222222222222222222222222222222222222222");
       if (userCredential.additionalUserInfo!.isNewUser) {
         userModel = UserModel(
           name: userCredential.user!.displayName ?? "No Name",
@@ -51,9 +54,12 @@ class AuthRepository {
           isAuthenticated: true,
           subject: [],
         );
-        _users.doc(userCredential.user!.uid).set(userModel.toMap());
+        print("33333333333333333333333333333333333333333333333333333333333333333333333333333");
+        await _users.doc(userCredential.user!.uid).set(userModel.toMap());
       } else {
+        print("444444444444444444444444444444444444444444444444444444444444444");
         userModel = await getUserData(userCredential.user!.uid).first;
+        print("666666666666666666666666666666666666666666666666666666666666");
       }
       return userModel;
     } catch (e) {
@@ -61,7 +67,13 @@ class AuthRepository {
     }
   }
 
+  void logOut() async {
+    await _googleSignIn.signOut();
+    await _auth.signOut();
+  }
+
   Stream<UserModel> getUserData(String uid) {
+    print("55555555555555555555555555555555555555555555555555555555555555555555555");
     return _users.doc(uid).snapshots().map(
         (event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
   }
