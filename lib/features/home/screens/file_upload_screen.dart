@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:ml_project/constants/constants.dart';
-import 'package:ml_project/features/auth/services/services.dart';
+import 'package:ml_project/features/auth/repository/services.dart';
 import 'package:ml_project/models/document_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -24,6 +24,7 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
   List<String> downloadUrls = [];
   int predictions = -1;
   List<String> fileContent = [];
+  bool success = false;
 
   void callPickFiles() async {
     final result = await ref.read(servicesProvider.notifier).pickFile(context);
@@ -57,7 +58,9 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
             prediction: Constants.subjectTypes[predictions],
             createdAt: DateFormat("dd-MM-yyyy").format(DateTime.now())
           ),);
-          setState(() {});
+          setState(() {
+            success = true;
+          });
         }).catchError((error) {
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(error.toString())));
@@ -179,6 +182,7 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
                           );
                         },
                       ),
+            success ? Text("Files Uploaded successfully") : SizedBox(),
             ListView.builder(
               // scrollDirection: Axis.vertical,
               physics: const NeverScrollableScrollPhysics(),

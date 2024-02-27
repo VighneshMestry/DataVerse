@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:ml_project/common/notifications.dart';
 import 'package:ml_project/constants/constants.dart';
-import 'package:ml_project/features/auth/services/services.dart';
+import 'package:ml_project/features/auth/repository/services.dart';
 import 'package:ml_project/features/home/screens/fetch_screen.dart';
 import 'package:ml_project/features/home/screens/file_upload_screen.dart';
 import 'package:ml_project/models/document_model.dart';
