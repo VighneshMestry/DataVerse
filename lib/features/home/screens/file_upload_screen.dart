@@ -52,11 +52,14 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
           final docId = const Uuid().v1();
           await ref.read(servicesProvider.notifier).uploadToFirebase(Doc(
             fileName: fileNames[i],
+            assignmentTitle: "New Assignment",
+            assigmentDescription: "",
             docId: docId,
             type: "pdf",
             fileUrl: singleFilePath,
             prediction: Constants.subjectTypes[predictions],
-            createdAt: DateFormat("dd-MM-yyyy").format(DateTime.now())
+            createdAt: DateFormat("dd-MM-yyyy").format(DateTime.now()),
+            tags: []
           ),);
           setState(() {
             success = true;

@@ -64,10 +64,13 @@ class _HomeScreenState extends State<HomeScreen> {
           Doc(
             fileName: fileNames[i],
             docId: docId,
+            assignmentTitle: "New Assignment",
+            assigmentDescription: "",
             type: "pdf",
             fileUrl: singleFilePath,
             prediction: Constants.subjectTypes[predictions],
-            createdAt: DateFormat("dd-MM-yyyy").format(DateTime.now())
+            createdAt: DateFormat("dd-MM-yyyy").format(DateTime.now()),
+            tags: []
           ),
         );
         setState(() {});

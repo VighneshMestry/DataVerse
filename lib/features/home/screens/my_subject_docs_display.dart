@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ml_project/common/document_card.dart';
 import 'package:ml_project/features/my_classroom/services/my_classroom_services.dart';
 
 import 'package:ml_project/models/subject_model.dart';
@@ -44,18 +45,22 @@ class _MySubjectDocsDisplayScreenState
                         shrinkWrap: true,
                         itemCount: data.length,
                         itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Container(
-                              height: 50,
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                  border:
-                                      Border.all(color: Colors.black, width: 0.5),
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Text(
-                                data[index].fileName,
-                              ),
-                            ),
+                          // return ListTile(
+                          //   title: Container(
+                          //     height: 50,
+                          //     padding: const EdgeInsets.all(10),
+                          //     decoration: BoxDecoration(
+                          //         border:
+                          //             Border.all(color: Colors.black, width: 0.5),
+                          //         borderRadius: BorderRadius.circular(10)),
+                          //     child: Text(
+                          //       data[index].fileName,
+                          //     ),
+                          //   ),
+                          // );
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: DocumentCard(document: data[index],),
                           );
                         },
                       ),
