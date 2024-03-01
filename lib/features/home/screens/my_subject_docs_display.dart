@@ -59,7 +59,7 @@ class _MySubjectDocsDisplayScreenState
                           //   ),
                           // );
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
+                            padding: const EdgeInsets.only(bottom: 20.0),
                             child: DocumentCard(document: data[index],),
                           );
                         },
