@@ -103,7 +103,7 @@ class DocumentCard extends ConsumerWidget {
                     document.assigmentDescription,
                     style: const TextStyle(fontSize: 16),
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 5,
+                    maxLines: 4,
                   ),
             const SizedBox(height: 10),
             Container(
