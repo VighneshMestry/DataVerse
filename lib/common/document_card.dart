@@ -1,6 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/constants/my_flutter_app_icons.dart';
@@ -16,6 +13,9 @@ class DocumentCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    TextEditingController assignmentName = TextEditingController();
+    TextEditingController assignmentDescription = TextEditingController();
+    TextEditingController tags = TextEditingController();
     return Container(
       height: 240,
       decoration: BoxDecoration(
@@ -27,7 +27,6 @@ class DocumentCard extends ConsumerWidget {
             color: Colors.grey.shade50,
             spreadRadius: 2,
             blurRadius: 3,
-            // offset: Offset(0, 3),
           ),
         ],
       ),
@@ -52,10 +51,59 @@ class DocumentCard extends ConsumerWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "New Assignment: ${document.assignmentTitle}",
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w500),
+                    GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          barrierDismissible: true,
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Enter Details'),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TextField(
+                                    controller: assignmentName,
+                                    decoration: InputDecoration(
+                                        labelText: 'Assignment Name'),
+                                  ),
+                                  TextField(
+                                    controller: assignmentDescription,
+                                    decoration: InputDecoration(
+                                        labelText: 'Assignent Description'),
+                                  ),
+                                ],
+                              ),
+                              actions: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    // Perform submission actions here
+                                    String value1 = assignmentName.text;
+                                    String value2 = assignmentDescription.text;
+                                    print('Text Field 1: $value1');
+                                    print('Text Field 2: $value2');
+                                    Navigator.of(context)
+                                        .pop(); // Close the dialog
+                                  },
+                                  child: Text('Submit'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop(); // Close the dialog
+                                  },
+                                  child: Text('Cancel'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Text(
+                        "New Assignment: ${document.assignmentTitle}",
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
                     ),
                     const SizedBox(height: 5),
                     Text(
@@ -127,11 +175,11 @@ class DocumentCard extends ConsumerWidget {
                           height: 10,
                           padding: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.red
-                          ),
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.red),
                           child: Text(
-                            document.tags[index], style: TextStyle(color: Colors.white),
+                            document.tags[index],
+                            style: TextStyle(color: Colors.white),
                           ),
                         ),
                       );
@@ -145,4 +193,6 @@ class DocumentCard extends ConsumerWidget {
       ),
     );
   }
+
+  void showDocumentEditingDialog(BuildContext context) {}
 }

@@ -32,7 +32,7 @@ class _MySubjectDocsDisplayScreenState
             data: (data) {
               return SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Column(
                     children: [
                       Container(
@@ -70,7 +70,7 @@ class _MySubjectDocsDisplayScreenState
               );
             },
             error: (error, stackTrace) => Text(error.toString()),
-            loading: () => const CircularProgressIndicator(),
+            loading: () => const Center(child: CircularProgressIndicator()),
           ),
     );
   }
