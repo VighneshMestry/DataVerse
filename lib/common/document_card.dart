@@ -1,23 +1,102 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:ml_project/constants/my_flutter_app_icons.dart';
+import 'package:ml_project/directory_path.dart';
 import 'package:ml_project/features/auth/repository/services.dart';
-
 import 'package:ml_project/models/document_model.dart';
+import 'package:open_file/open_file.dart';
 
-class DocumentCard extends ConsumerWidget {
+class DocumentCard extends ConsumerStatefulWidget {
   final Doc document;
   const DocumentCard({
     super.key,
     required this.document,
   });
 
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _DocumentCardState();
+}
+
+class _DocumentCardState extends ConsumerState<DocumentCard> {
+  bool downloading = false;
+  bool fileExists = false;
+  double progress = 0;
+  late String filePath;
+  late CancelToken cancelToken;
+  var getPathFile = DirectoryPath();
+
+  startDownload() async {
+    cancelToken = CancelToken();
+    var storePath = await getPathFile.getPath();
+    filePath = '$storePath/${widget.document.fileName}';
+    setState(() {
+      downloading = true;
+      progress = 0;
+    });
+
+    try {
+      print("downloading>...........................");
+      await Dio().download(widget.document.fileUrl, filePath,
+          onReceiveProgress: (count, total) {
+        setState(() {
+          progress = (count / total);
+        });
+      }, cancelToken: cancelToken);
+      setState(() {
+        downloading = false;
+        fileExists = true;
+      });
+      if (fileExists == true) {
+        openfile();
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        downloading = false;
+      });
+    }
+  }
+
+  cancelDownload() {
+    cancelToken.cancel();
+    setState(() {
+      downloading = false;
+    });
+  }
+
+  openfile() {
+    OpenFile.open(filePath);
+    print("fff $filePath");
+  }
+
+  checkFileExist() async {
+    var storePath = await getPathFile.getPath();
+    filePath = '$storePath/${widget.document.fileName}';
+    print("filePath-- $filePath");
+    bool fileExistCheck = await File(filePath).exists();
+    setState(() {
+      fileExists = fileExistCheck;
+      print(
+          "last file check!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! $fileExists");
+    });
+  }
+
   void updateNameDescriptionTags(WidgetRef ref, Doc doc) async {
     await ref.read(servicesProvider.notifier).updateNameDescriptionTags(doc);
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     TextEditingController assignmentTitle = TextEditingController();
     TextEditingController assignmentDescription = TextEditingController();
     TextEditingController tags = TextEditingController();
@@ -85,13 +164,14 @@ class DocumentCard extends ConsumerWidget {
                                     // Perform submission actions here
                                     String assignmentTitleText =
                                         (assignmentTitle.text.length == 0)
-                                            ? document.assignmentTitle
+                                            ? widget.document.assignmentTitle
                                             : assignmentTitle.text.trim();
                                     String assignmentDescriptionText =
                                         (assignmentDescription.text.length == 0)
-                                            ? document.assigmentDescription
+                                            ? widget
+                                                .document.assigmentDescription
                                             : assignmentDescription.text.trim();
-                                    Doc newDoc = document.copyWith(
+                                    Doc newDoc = widget.document.copyWith(
                                         assignmentTitle: assignmentTitleText,
                                         assigmentDescription:
                                             assignmentDescriptionText);
@@ -115,14 +195,14 @@ class DocumentCard extends ConsumerWidget {
                         );
                       },
                       child: Text(
-                        "New Assignment: ${document.assignmentTitle}",
+                        "New Assignment: ${widget.document.assignmentTitle}",
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w500),
                       ),
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      "Posted on ${document.createdAt}",
+                      "Posted on ${widget.document.createdAt}",
                       style:
                           TextStyle(fontSize: 14, color: Colors.grey.shade700),
                     ),
@@ -131,30 +211,64 @@ class DocumentCard extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 15),
-            document.assigmentDescription.isEmpty
+            widget.document.assigmentDescription.isEmpty
                 ? Column(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.only(
-                            left: 15, right: 8, top: 8, bottom: 8),
-                        height: 40,
-                        width: 250,
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade400),
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Row(
-                          children: [
-                            (document.type == "pdf")
-                                ? Icon(CustomIcons.file_pdf,
-                                    color: Colors.red.shade700)
-                                : ((document.type == "docx")
-                                    ? Icon(CustomIcons.doc_text,
-                                        color: Colors.blue.shade700)
-                                    : Icon(CustomIcons.table,
-                                        color: Colors.green.shade700)),
-                            const SizedBox(width: 10),
-                            Text(document.fileName),
-                          ],
+                      GestureDetector(
+                        onTap: () async {
+                          await checkFileExist();
+                          fileExists ? openfile() : startDownload();
+                          if (downloading) {
+                            // ignore: use_build_context_synchronously
+                            showDialog(
+                                barrierDismissible: true,
+                                context: context,
+                                builder: (context) {
+                                  print("Downloading dialog______________________________________________________");
+                                  return AlertDialog(
+                                    content: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        CircularProgressIndicator(
+                                          value: progress,
+                                          strokeWidth: 3,
+                                          backgroundColor: Colors.grey,
+                                          valueColor:
+                                              const AlwaysStoppedAnimation<
+                                                  Color>(Colors.blue),
+                                        ),
+                                        Text(
+                                          (progress * 100).toStringAsFixed(2),
+                                          style: const TextStyle(fontSize: 12),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                });
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.only(
+                              left: 15, right: 8, top: 8, bottom: 8),
+                          height: 40,
+                          width: 250,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade400),
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Row(
+                            children: [
+                              (widget.document.type == "pdf")
+                                  ? Icon(CustomIcons.file_pdf,
+                                      color: Colors.red.shade700)
+                                  : ((widget.document.type == "docx")
+                                      ? Icon(CustomIcons.doc_text,
+                                          color: Colors.blue.shade700)
+                                      : Icon(CustomIcons.table,
+                                          color: Colors.green.shade700)),
+                              const SizedBox(width: 10),
+                              Text(widget.document.fileName),
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(
@@ -165,7 +279,7 @@ class DocumentCard extends ConsumerWidget {
                 : SizedBox(
                     height: 90,
                     child: Text(
-                      document.assigmentDescription,
+                      widget.document.assigmentDescription,
                       style: const TextStyle(fontSize: 16),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 4,
@@ -185,7 +299,7 @@ class DocumentCard extends ConsumerWidget {
                     scrollDirection: Axis.horizontal,
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: document.tags.length,
+                    itemCount: widget.document.tags.length,
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -196,7 +310,7 @@ class DocumentCard extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(10),
                               color: Colors.red),
                           child: Text(
-                            document.tags[index],
+                            widget.document.tags[index],
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),
@@ -225,10 +339,11 @@ class DocumentCard extends ConsumerWidget {
                               ElevatedButton(
                                 onPressed: () {
                                   String tagsText = tags.text;
-                                  document.tags.add(tagsText);
-                                  List<String> newDocTags = document.tags;
-                                  Doc newDoc =
-                                      document.copyWith(tags: newDocTags);
+                                  widget.document.tags.add(tagsText);
+                                  List<String> newDocTags =
+                                      widget.document.tags;
+                                  Doc newDoc = widget.document
+                                      .copyWith(tags: newDocTags);
                                   updateNameDescriptionTags(ref, newDoc);
 
                                   Navigator.of(context)
@@ -258,6 +373,4 @@ class DocumentCard extends ConsumerWidget {
       ),
     );
   }
-
-  void showDocumentEditingDialog(BuildContext context) {}
 }

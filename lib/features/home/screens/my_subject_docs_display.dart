@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ml_project/check_permissions.dart';
 
 import 'package:ml_project/common/document_card.dart';
 import 'package:ml_project/features/my_classroom/services/my_classroom_services.dart';

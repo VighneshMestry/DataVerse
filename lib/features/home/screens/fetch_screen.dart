@@ -6,6 +6,7 @@ import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/features/home/screens/file_upload_screen.dart';
 import 'package:ml_project/features/home/screens/my_subject_docs_display.dart';
 
+
 class FetchScreen extends ConsumerStatefulWidget {
   const FetchScreen({super.key});
 
@@ -19,7 +20,6 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
 
   checkPermission() async {
     var permission = await checkAllPermissions.isStoragePermission();
-    print(permission);
     if (permission) {
       setState(() {
         isPermission = true;
