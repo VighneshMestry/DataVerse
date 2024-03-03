@@ -1,16 +1,19 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ml_project/check_permissions.dart';
+
 import 'package:ml_project/common/document_card.dart';
 import 'package:ml_project/features/my_classroom/services/my_classroom_services.dart';
-
 import 'package:ml_project/models/subject_model.dart';
 
 class MySubjectDocsDisplayScreen extends ConsumerStatefulWidget {
   final Subject subject;
+  final bool isPermission;
   const MySubjectDocsDisplayScreen({
     super.key,
     required this.subject,
+    required this.isPermission,
   });
 
   @override
@@ -26,7 +29,7 @@ class _MySubjectDocsDisplayScreenState
       appBar: AppBar(
         title: Text(widget.subject.name),
       ),
-      body: ref
+      body: widget.isPermission ? ref
           .watch(tempGetMySubjectDocumentsProvider(widget.subject.subjectType))
           .when(
             data: (data) {
@@ -60,7 +63,9 @@ class _MySubjectDocsDisplayScreenState
                           // );
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 20.0),
-                            child: DocumentCard(document: data[index],),
+                            child: DocumentCard(
+                              document: data[index],
+                            ),
                           );
                         },
                       ),
@@ -71,7 +76,7 @@ class _MySubjectDocsDisplayScreenState
             },
             error: (error, stackTrace) => Text(error.toString()),
             loading: () => const Center(child: CircularProgressIndicator()),
-          ),
+          ) : const Text("Permission Denied"),
     );
   }
 }

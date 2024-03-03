@@ -1,15 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ml_project/check_permissions.dart';
 import 'package:ml_project/common/subject_card.dart';
 import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/features/home/screens/file_upload_screen.dart';
 import 'package:ml_project/features/home/screens/my_subject_docs_display.dart';
 
-class FetchScreen extends ConsumerWidget {
+class FetchScreen extends ConsumerStatefulWidget {
   const FetchScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _FetchScreenState();
+}
+
+class _FetchScreenState extends ConsumerState<FetchScreen> {
+  bool isPermission = false;
+  CheckPermission checkAllPermissions = CheckPermission();
+
+  checkPermission() async {
+    var permission = await checkAllPermissions.isStoragePermission();
+    print(permission);
+    if (permission) {
+      setState(() {
+        isPermission = true;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkPermission();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: const Icon(Icons.menu),
@@ -45,15 +70,16 @@ class FetchScreen extends ConsumerWidget {
                 itemCount: Constants.defaultSubjects.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
-                    onTap: () => {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MySubjectDocsDisplayScreen(
-                            subject: Constants.defaultSubjects[index],
+                    onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MySubjectDocsDisplayScreen(
+                              isPermission: isPermission,
+                              subject: Constants.defaultSubjects[index],
+                            ),
                           ),
-                        ),
-                      ),
+                        );
                     },
                     child: SubjectCard(
                       subject: Constants.defaultSubjects[index],

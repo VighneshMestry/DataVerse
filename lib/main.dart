@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:ml_project/features/auth/repository/auth_repository.dart';
-import 'package:ml_project/features/auth/screens/login_screen.dart';
+// import 'package:ml_project/features/auth/screens/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:ml_project/features/home/screens/fetch_screen.dart';
 import 'package:ml_project/models/user_model.dart';
 import 'firebase_options.dart';
 // import 'package:ml_project/features/home/screens/home_screen.dart';
@@ -53,7 +54,7 @@ class MyApp extends ConsumerWidget {
       //   // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       //   // useMaterial3: true,
       // ),
-      home: LoginScreen(),
+      home: FetchScreen(),
     );
   }
 }

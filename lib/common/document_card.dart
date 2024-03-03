@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/constants/my_flutter_app_icons.dart';
+import 'package:ml_project/features/auth/repository/services.dart';
 
 import 'package:ml_project/models/document_model.dart';
 
@@ -11,9 +12,13 @@ class DocumentCard extends ConsumerWidget {
     required this.document,
   });
 
+  void updateNameDescriptionTags(WidgetRef ref, Doc doc) async {
+    await ref.read(servicesProvider.notifier).updateNameDescriptionTags(doc);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    TextEditingController assignmentName = TextEditingController();
+    TextEditingController assignmentTitle = TextEditingController();
     TextEditingController assignmentDescription = TextEditingController();
     TextEditingController tags = TextEditingController();
     return Container(
@@ -58,18 +63,18 @@ class DocumentCard extends ConsumerWidget {
                           context: context,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text('Enter Details'),
+                              title: const Text('Enter Details'),
                               content: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   TextField(
-                                    controller: assignmentName,
-                                    decoration: InputDecoration(
+                                    controller: assignmentTitle,
+                                    decoration: const InputDecoration(
                                         labelText: 'Assignment Name'),
                                   ),
                                   TextField(
                                     controller: assignmentDescription,
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                         labelText: 'Assignent Description'),
                                   ),
                                 ],
@@ -78,21 +83,31 @@ class DocumentCard extends ConsumerWidget {
                                 ElevatedButton(
                                   onPressed: () {
                                     // Perform submission actions here
-                                    String value1 = assignmentName.text;
-                                    String value2 = assignmentDescription.text;
-                                    print('Text Field 1: $value1');
-                                    print('Text Field 2: $value2');
+                                    String assignmentTitleText =
+                                        (assignmentTitle.text.length == 0)
+                                            ? document.assignmentTitle
+                                            : assignmentTitle.text.trim();
+                                    String assignmentDescriptionText =
+                                        (assignmentDescription.text.length == 0)
+                                            ? document.assigmentDescription
+                                            : assignmentDescription.text.trim();
+                                    Doc newDoc = document.copyWith(
+                                        assignmentTitle: assignmentTitleText,
+                                        assigmentDescription:
+                                            assignmentDescriptionText);
+                                    updateNameDescriptionTags(ref, newDoc);
+
                                     Navigator.of(context)
                                         .pop(); // Close the dialog
                                   },
-                                  child: Text('Submit'),
+                                  child: const Text('Submit'),
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
                                     Navigator.of(context)
                                         .pop(); // Close the dialog
                                   },
-                                  child: Text('Cancel'),
+                                  child: const Text('Cancel'),
                                 ),
                               ],
                             );
@@ -147,11 +162,14 @@ class DocumentCard extends ConsumerWidget {
                       ),
                     ],
                   )
-                : Text(
-                    document.assigmentDescription,
-                    style: const TextStyle(fontSize: 16),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 4,
+                : SizedBox(
+                    height: 90,
+                    child: Text(
+                      document.assigmentDescription,
+                      style: const TextStyle(fontSize: 16),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 4,
+                    ),
                   ),
             const SizedBox(height: 10),
             Container(
@@ -162,7 +180,7 @@ class DocumentCard extends ConsumerWidget {
             Expanded(
               child: Row(
                 children: [
-                  Text("Tags"),
+                  const Text("Tags: "),
                   ListView.builder(
                     scrollDirection: Axis.horizontal,
                     physics: const NeverScrollableScrollPhysics(),
@@ -179,11 +197,58 @@ class DocumentCard extends ConsumerWidget {
                               color: Colors.red),
                           child: Text(
                             document.tags[index],
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ),
                       );
                     },
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showDialog(
+                        barrierDismissible: true,
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Enter Tags'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                TextField(
+                                  controller: tags,
+                                  decoration: const InputDecoration(
+                                      labelText: 'Enter new tag'),
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  String tagsText = tags.text;
+                                  document.tags.add(tagsText);
+                                  List<String> newDocTags = document.tags;
+                                  Doc newDoc =
+                                      document.copyWith(tags: newDocTags);
+                                  updateNameDescriptionTags(ref, newDoc);
+
+                                  Navigator.of(context)
+                                      .pop(); // Close the dialog
+                                },
+                                child: const Text('Submit'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(); // Close the dialog
+                                },
+                                child: const Text('Cancel'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    icon: Icon(Icons.add, color: Colors.grey.shade600),
                   ),
                 ],
               ),
