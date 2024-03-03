@@ -26,7 +26,7 @@ class Services extends StateNotifier<bool> {
   Services() : super(false);
 
   CollectionReference get _docs =>
-      FirebaseFirestore.instance.collection("documents");
+      _firestore.collection("documents");
 
   Future uploadToFirebase(Doc doc) async {
     return await _docs.doc(doc.docId).set(doc.toMap());
