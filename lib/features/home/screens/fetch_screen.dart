@@ -1,15 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:ml_project/check_permissions.dart';
-import 'package:ml_project/common/notifications.dart';
 import 'package:ml_project/common/subject_card.dart';
 import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/features/auth/repository/services.dart';
@@ -43,11 +40,9 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
     await ref
         .read(servicesProvider.notifier)
         .uploadPDF(context, file, scannedDocId);
-        print("2222222222222222222222222222222222222222222222222222222222");
     String singleFilePath = await ref
         .read(servicesProvider.notifier)
         .getPdfDownloadUrl(scannedDocId);
-        print("333333333333333333333333333333333333333333333333333333");
     // ignore: use_build_context_synchronously
     await ref
         .read(servicesProvider.notifier)
@@ -55,7 +50,6 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
         .then((content) async {
       final predictions = predict(content);
       final docId = const Uuid().v1();
-      print("444444444444444444444444444444444444444444444444444444444444");
       await ref.read(servicesProvider.notifier).uploadToFirebase(
             Doc(
                 fileName: scannedDocId,
@@ -69,7 +63,6 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                     "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
                 tags: []),
           );
-          print("5555555555555555555555555555555555555555555555555555555555555555");
       setState(() {});
     }).catchError((error) {
       ScaffoldMessenger.of(context)
@@ -154,13 +147,13 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
             padding: const EdgeInsets.all(12.0),
             child: IconButton(
                 onPressed: () async {
-                  NotificationServices n = NotificationServices();
-                  RemoteMessage message = RemoteMessage(
-                      notification: RemoteNotification(
-                          title: "Hello",
-                          body: "This is notificaiton",
-                          android: AndroidNotification(channelId: "0")));
-                  await n.showNotification(message);
+                  // NotificationServices n = NotificationServices();
+                  // RemoteMessage message = RemoteMessage(
+                  //     notification: RemoteNotification(
+                  //         title: "Hello",
+                  //         body: "This is notificaiton",
+                  //         android: AndroidNotification(channelId: "0")));
+                  // await n.showNotification(message);
                 },
                 icon: const Icon(
                   Icons.search,
@@ -179,10 +172,10 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
           child: Column(
             children: [
               Container(
-                decoration: BoxDecoration(color: Colors.grey),
+                decoration: const BoxDecoration(color: Colors.grey),
                 height: 1,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               ListView.builder(
                 shrinkWrap: true,
@@ -285,7 +278,6 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                                     .scanImages(ImageSource.camera);
                                 setState(() {});
                                 File scannedFile = File(file.path);
-                                print("1111111111111111111111111111111111111111111111111111111");
                                 hanlingScannedImages(scannedFile);
                               },
                               style: TextButton.styleFrom(
