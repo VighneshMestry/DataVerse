@@ -1,0 +1,2 @@
+dimensions - 164.19 x 76.10 x 8.12mm
+String uri = "http://192.168.0.103:4000";

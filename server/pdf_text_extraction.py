@@ -3,6 +3,10 @@ import sys
 from docx import Document
 import fitz
 import requests
+import cv2
+import requests
+import numpy as np
+import pytesseract
 
 def read_pdf_from_url(url):
     # Fetch the content of the PDF from the URL
@@ -54,6 +58,26 @@ def read_online_word_document(url):
         return None
 
 
+def image_to_text(url):
+    # Send a GET request to the URL to fetch the image
+    response = requests.get(url)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Convert the image content to a numpy array
+        image_array = np.asarray(bytearray(response.content), dtype=np.uint8)
+        
+        # Decode the numpy array into an OpenCV image
+        image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+
+        # Use pytesseract to do OCR on the image
+        text = pytesseract.image_to_string(image)
+
+        # Print the extracted text
+        print(text)
+    else:
+        print("Failed to fetch the image:", response.status_code)
+
 def remove_non_ascii_chars(input_str):
     """
     Remove non-ASCII characters from the input string.
@@ -75,7 +99,7 @@ if __name__ == "__main__":
     file_extension = file_extension[0:4]
     
     # file_extension =  file_extension.lower()
-    # print("File extension is " + file_extension)
+    print("File extension is " + file_extension)
     if file_extension == 'pdf?':
         extracted_text = read_pdf_from_url(document_path)
     elif file_extension == 'docx':
@@ -83,6 +107,12 @@ if __name__ == "__main__":
     elif file_extension == 'xlsx':
         # print("The URL points to an Excel file.")
         demo = ''
+    elif file_extension == 'jpg?':
+        # print("The URL points to an Excel file.")
+        image_to_text(document_path)
+    elif file_extension == 'png?':
+        # print("The URL points to an Excel file.")
+        image_to_text(document_path)
     else:
         # print("The file type is unknown.")
         error = ''

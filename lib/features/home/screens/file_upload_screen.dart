@@ -58,7 +58,7 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
             type: "pdf",
             fileUrl: singleFilePath,
             prediction: Constants.subjectTypes[predictions],
-            createdAt: DateFormat("dd-MM-yyyy").format(DateTime.now()),
+            createdAt: "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
             tags: []
           ),);
           setState(() {
