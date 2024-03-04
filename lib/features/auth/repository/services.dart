@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:ml_project/models/document_model.dart';
 
 final servicesProvider = StateNotifierProvider<Services, bool>((ref) {
@@ -71,7 +72,13 @@ class Services extends StateNotifier<bool> {
     return downloadUrl;
   }
 
-  
+  scanImages (ImageSource source) async {
+    final ImagePicker imagePicker = ImagePicker();
+    XFile? file = await imagePicker.pickImage(source: source);
+    if(file != null) {
+      return file;
+    }
+  }
 
   Future contactServer(BuildContext context, String link) async {
     try {

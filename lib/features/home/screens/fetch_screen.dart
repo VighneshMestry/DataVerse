@@ -1,12 +1,22 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:ml_project/check_permissions.dart';
 import 'package:ml_project/common/notifications.dart';
 import 'package:ml_project/common/subject_card.dart';
 import 'package:ml_project/constants/constants.dart';
+import 'package:ml_project/features/auth/repository/services.dart';
 import 'package:ml_project/features/home/screens/file_upload_screen.dart';
 import 'package:ml_project/features/home/screens/my_subject_docs_display.dart';
+import 'package:ml_project/models/document_model.dart';
+import 'package:uuid/uuid.dart';
 
 class FetchScreen extends ConsumerStatefulWidget {
   const FetchScreen({super.key});
@@ -28,10 +38,109 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
     }
   }
 
+  void hanlingScannedImages(File file) async {
+    final scannedDocId = const Uuid().v1();
+    await ref
+        .read(servicesProvider.notifier)
+        .uploadPDF(context, file, scannedDocId);
+        print("2222222222222222222222222222222222222222222222222222222222");
+    String singleFilePath = await ref
+        .read(servicesProvider.notifier)
+        .getPdfDownloadUrl(scannedDocId);
+        print("333333333333333333333333333333333333333333333333333333");
+    // ignore: use_build_context_synchronously
+    await ref
+        .read(servicesProvider.notifier)
+        .contactServer(context, singleFilePath)
+        .then((content) async {
+      final predictions = predict(content);
+      final docId = const Uuid().v1();
+      print("444444444444444444444444444444444444444444444444444444444444");
+      await ref.read(servicesProvider.notifier).uploadToFirebase(
+            Doc(
+                fileName: scannedDocId,
+                assignmentTitle: "New Assignment",
+                assigmentDescription: "",
+                docId: docId,
+                type: "pdf",
+                fileUrl: singleFilePath,
+                prediction: Constants.subjectTypes[predictions],
+                createdAt:
+                    "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
+                tags: []),
+          );
+          print("5555555555555555555555555555555555555555555555555555555555555555");
+      setState(() {});
+    }).catchError((error) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error.toString())));
+    });
+  }
+
+  dynamic _model;
+
+  int predict(String inputText) {
+    if (_model == null ||
+        !_model.containsKey('vocabulary') ||
+        !_model.containsKey('class_prior') ||
+        !_model.containsKey('feature_count')) {
+      return -1; // Return an error code or handle the error appropriately
+    }
+
+    final vocabulary = _model['vocabulary'];
+    final classPrior = _model['class_prior'];
+    // final featureCount = _model['feature_count'];
+    // final classCount = _model['class_count'];
+
+    // Tokenize the input text using the same CountVectorizer vocabulary
+    final List<String> tokens = inputText.toLowerCase().split(RegExp(r'\W+'));
+
+    // Initialize variables to store probabilities for each class
+    final List<double> classProbabilities = List.filled(classPrior.length, 0.0);
+
+    // Calculate log probabilities for each class
+    for (int i = 0; i < classPrior.length; i++) {
+      double logProbability = _model['class_prior'][i];
+
+      for (String token in tokens) {
+        if (vocabulary.containsKey(token)) {
+          final tokenIndex = _model['vocabulary'][token];
+          logProbability += _model['feature_count'][i][tokenIndex];
+        }
+      }
+
+      classProbabilities[i] = logProbability;
+    }
+
+    // Select the class with the highest probability
+    int predictedClass = 0;
+    double maxProbability = classProbabilities[0];
+
+    for (int i = 1; i < classProbabilities.length; i++) {
+      if (classProbabilities[i] > maxProbability) {
+        maxProbability = classProbabilities[i];
+        predictedClass = i;
+      }
+    }
+    return predictedClass;
+  }
+
   @override
   void initState() {
     super.initState();
+    
     checkPermission();
+    loadModel();
+  }
+
+  Future<void> loadModel() async {
+    // Load the serialized model from assets
+    final String modelData = await rootBundle
+        .loadString('assets/multinomial_naive_bayes_model.json');
+
+    // Parse the JSON data
+    final Map<String, dynamic> modelMap = json.decode(modelData);
+    _model = modelMap;
   }
 
   @override
@@ -170,7 +279,15 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                                       fontWeight: FontWeight.normal)),
                             ),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                XFile file = await ref
+                                    .watch(servicesProvider.notifier)
+                                    .scanImages(ImageSource.camera);
+                                setState(() {});
+                                File scannedFile = File(file.path);
+                                print("1111111111111111111111111111111111111111111111111111111");
+                                hanlingScannedImages(scannedFile);
+                              },
                               style: TextButton.styleFrom(
                                   minimumSize: const Size(double.infinity, 30)),
                               child: const Text(

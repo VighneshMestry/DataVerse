@@ -140,7 +140,10 @@ if __name__ == "__main__":
     elif file_extension == 'jpg?':
         # print("The URL points to an Excel file.")
         extracted_text = image_to_text(document_path)
-    elif file_extension == 'png':
+    elif file_extension == 'png?':
+        # print("The URL points to an Excel file.")
+        extracted_text = image_to_text(document_path)
+    elif file_extension == 'docs':
         # print("The URL points to an Excel file.")
         extracted_text = image_to_text(document_path)
     else:
