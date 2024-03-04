@@ -18,7 +18,7 @@ final servicesProvider = StateNotifierProvider<Services, bool>((ref) {
 // });
 
 class Services extends StateNotifier<bool> {
-  String uri = "http://192.168.0.103:4000";
+  String uri = "http://192.168.0.101:4000";
   // String  uri = "http://localhost:3000";
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -56,17 +56,7 @@ class Services extends StateNotifier<bool> {
   }
 
   Future<FilePickerResult?> pickFile(BuildContext context) {
-    // List<File> files = [];
     return FilePicker.platform.pickFiles(allowMultiple: true);
-    // if (result != null) {
-    //   fileNames = result.names.map((name) => name!).toList();
-    //   // files = result.paths.map((path) => File(path!)).toList();
-    // } else {
-    //   // ignore: use_build_context_synchronously
-    //   ScaffoldMessenger.of(context)
-    //       .showSnackBar(const SnackBar(content: Text("Upload Cancel")));
-    // }
-    // return fileNames;
   }
 
   Future<String> getPdfDownloadUrl(String name) async {
@@ -80,6 +70,8 @@ class Services extends StateNotifier<bool> {
     }
     return downloadUrl;
   }
+
+  
 
   Future contactServer(BuildContext context, String link) async {
     try {
@@ -97,50 +89,6 @@ class Services extends StateNotifier<bool> {
         }),
       );
       state = false;
-      print("Dart api finish");
-      String stringData = "";
-      // ignore: use_build_context_synchronously
-      httpErrorHandle(
-        response: res,
-        context: context,
-        onSuccess: () {
-          Map<String, dynamic> jsonMap = jsonDecode(res.body);
-          // Extract the data array from the "msg" object
-          List<int> data = List<int>.from(jsonMap['msg']['data']);
-
-          // Convert the data array to a string
-          stringData = String.fromCharCodes(data);
-          print(
-              "STring data from dart api call&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& $stringData");
-          // print(res.body);
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text("Success")));
-        },
-      );
-      return stringData;
-    } catch (e) {
-      print("Error in the services catch block");
-      print(e.toString());
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
-    }
-  }
-
-  Future contactServerForText(BuildContext context, String link) async {
-    try {
-      // String link =
-      //   "C:/Users/Vighnesh/Flutter/Projects/ml_project/assets/demo.pdf";
-      print("Dart api run");
-      http.Response res = await http.post(
-        Uri.parse('$uri/demoGet'),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({
-          "link": link,
-        }),
-      );
       print("Dart api finish");
       String stringData = "";
       // ignore: use_build_context_synchronously

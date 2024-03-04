@@ -1,11 +1,12 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/check_permissions.dart';
+import 'package:ml_project/common/notifications.dart';
 import 'package:ml_project/common/subject_card.dart';
 import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/features/home/screens/file_upload_screen.dart';
 import 'package:ml_project/features/home/screens/my_subject_docs_display.dart';
-
 
 class FetchScreen extends ConsumerStatefulWidget {
   const FetchScreen({super.key});
@@ -39,15 +40,25 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
       appBar: AppBar(
         leading: const Icon(Icons.menu),
         title: const Text("DataVerse"),
-        actions: const [
+        actions: [
           Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Icon(
-              Icons.search,
-              size: 28,
-            ),
+            padding: const EdgeInsets.all(12.0),
+            child: IconButton(
+                onPressed: () async {
+                  NotificationServices n = NotificationServices();
+                  RemoteMessage message = RemoteMessage(
+                      notification: RemoteNotification(
+                          title: "Hello",
+                          body: "This is notificaiton",
+                          android: AndroidNotification(channelId: "0")));
+                  await n.showNotification(message);
+                },
+                icon: const Icon(
+                  Icons.search,
+                  size: 28,
+                )),
           ),
-          Padding(
+          const Padding(
             padding: EdgeInsets.only(left: 12, top: 12, bottom: 12, right: 15),
             child: Icon(Icons.published_with_changes_outlined, size: 28),
           )
@@ -71,15 +82,15 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MySubjectDocsDisplayScreen(
-                              isPermission: isPermission,
-                              subject: Constants.defaultSubjects[index],
-                            ),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MySubjectDocsDisplayScreen(
+                            isPermission: isPermission,
+                            subject: Constants.defaultSubjects[index],
                           ),
-                        );
+                        ),
+                      );
                     },
                     child: SubjectCard(
                       subject: Constants.defaultSubjects[index],
@@ -134,9 +145,6 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Text("Subject Upload", style: TextStyle(color: Colors.black, fontSize: 22, decoration: TextDecoration.none, fontWeight: FontWeight.normal)),
-                            // Text("Files Upload", style: TextStyle(color: Colors.black, fontSize: 22, decoration: TextDecoration.none, fontWeight: FontWeight.normal)),
-                            // Text("Scan", style: TextStyle(color: Colors.black, fontSize: 22, decoration: TextDecoration.none, fontWeight: FontWeight.normal)),
                             TextButton(
                               onPressed: () {},
                               style: TextButton.styleFrom(
@@ -165,11 +173,13 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                               onPressed: () {},
                               style: TextButton.styleFrom(
                                   minimumSize: const Size(double.infinity, 30)),
-                              child: const Text("Scan",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.normal)),
+                              child: const Text(
+                                "Scan",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.normal),
+                              ),
                             ),
                           ],
                         ),
