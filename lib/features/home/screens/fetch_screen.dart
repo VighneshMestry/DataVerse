@@ -9,7 +9,9 @@ import 'package:intl/intl.dart';
 import 'package:ml_project/check_permissions.dart';
 import 'package:ml_project/common/subject_card.dart';
 import 'package:ml_project/constants/constants.dart';
+import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:ml_project/features/auth/repository/services.dart';
+import 'package:ml_project/features/auth/screens/login_screen.dart';
 import 'package:ml_project/features/home/screens/file_upload_screen.dart';
 import 'package:ml_project/features/home/screens/my_subject_docs_display.dart';
 import 'package:ml_project/models/document_model.dart';
@@ -154,6 +156,9 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                   //         body: "This is notificaiton",
                   //         android: AndroidNotification(channelId: "0")));
                   // await n.showNotification(message);
+                  ref.read(authControllerProvider.notifier).logOut();
+                  Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const LoginScreen()));
                 },
                 icon: const Icon(
                   Icons.search,
