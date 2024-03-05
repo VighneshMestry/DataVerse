@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/features/auth/controller/auth_controller.dart';
@@ -11,16 +12,39 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  User? _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _auth.authStateChanges().listen((event) {
+      setState(() {
+        _user = event;
+      });
+    });
+  }
+
   void signIn() {
     ref.read(authControllerProvider.notifier).signInWithGoogle();
     setState(() {
-      Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const FetchScreen()));
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => const FetchScreen()));
     });
   }
 
   void logOut() {
-    ref.read(authControllerProvider.notifier).logOut();
+    // ref.read(authControllerProvider.notifier).logOut();
+    _auth.signOut();
+  }
+
+  void signInWithGoogle() async {
+    try {
+      GoogleAuthProvider _googleAuthProvider = GoogleAuthProvider();
+      _auth.signInWithProvider(_googleAuthProvider);
+    } catch (e) {
+      throw e.toString();
+    }
   }
 
   @override
@@ -30,8 +54,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: () => signIn(),
+            _user != null ? Text(_user!.displayName!) : ElevatedButton(
+              onPressed: () => signInWithGoogle(),
               child: Text("Login"),
             ),
             ElevatedButton(
