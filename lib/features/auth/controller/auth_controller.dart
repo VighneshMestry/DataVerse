@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/features/auth/repository/auth_repository.dart';
 import 'package:ml_project/models/user_model.dart';
 
+final userProvider = StateProvider<UserModel?>((ref) => null);
+
 final authControllerProvider = StateNotifierProvider<AuthController, bool>(
   (ref) => AuthController(
     authRepository: ref.read(authRepositoryProvider),

@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ml_project/models/user_model.dart';
 
-final userProvider = StateProvider<UserModel?>((ref) => null);
-
 final authRepositoryProvider = Provider(
   (ref) => AuthRepository(
       firestore: FirebaseFirestore.instance,

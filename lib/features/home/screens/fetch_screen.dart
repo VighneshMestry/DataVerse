@@ -23,7 +23,7 @@ class FetchScreen extends ConsumerStatefulWidget {
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _FetchScreenState();
 }
-
+// AIDS - 0, DMBI - 1, EHF - 2, WEBX - 3
 class _FetchScreenState extends ConsumerState<FetchScreen> {
   bool isPermission = false;
   CheckPermission checkAllPermissions = CheckPermission();
@@ -57,6 +57,7 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                 fileName: scannedDocId,
                 assignmentTitle: "New Assignment",
                 assigmentDescription: "",
+                userId: ref.read(userProvider)!.uid,
                 docId: docId,
                 type: "pdf",
                 fileUrl: singleFilePath,
@@ -157,6 +158,7 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                   //         android: AndroidNotification(channelId: "0")));
                   // await n.showNotification(message);
                   ref.read(authControllerProvider.notifier).logOut();
+                  ref.read(userProvider.notifier).update((state) => null);
                   Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const LoginScreen()));
                 },

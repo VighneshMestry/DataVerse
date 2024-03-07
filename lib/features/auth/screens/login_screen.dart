@@ -56,6 +56,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         _userModel = await getUserData(userCredential.user!.uid).first;
         setState(() {});
       }
+      ref.read(userProvider.notifier).update((state) => _userModel);
       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const FetchScreen()));
     } on FirebaseException catch (e) {

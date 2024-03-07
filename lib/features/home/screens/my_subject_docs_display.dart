@@ -29,7 +29,7 @@ class _MySubjectDocsDisplayScreenState
         title: Text(widget.subject.name),
       ),
       body: widget.isPermission ? ref
-          .watch(tempGetMySubjectDocumentsProvider(widget.subject.subjectType))
+          .watch(getMySubjectDocumentsProvider(widget.subject.subjectType))
           .when(
             data: (data) {
               return SingleChildScrollView(
@@ -73,7 +73,7 @@ class _MySubjectDocsDisplayScreenState
                 ),
               );
             },
-            error: (error, stackTrace) => Text(error.toString()),
+            error: (error, stackTrace) => Text("Error ${error.toString()}"),
             loading: () => const Center(child: CircularProgressIndicator()),
           ) : const Text("Permission Denied"),
     );

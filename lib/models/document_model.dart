@@ -3,6 +3,7 @@ class Doc {
   final String assignmentTitle;
   final String assigmentDescription;
   final String docId;
+  final String userId;
   final String type;
   final String fileUrl;
   final String prediction;
@@ -13,6 +14,7 @@ class Doc {
     required this.assignmentTitle,
     required this.assigmentDescription,
     required this.docId,
+    required this.userId,
     required this.type,
     required this.fileUrl,
     required this.prediction,
@@ -25,6 +27,7 @@ class Doc {
     String? assignmentTitle,
     String? assigmentDescription,
     String? docId,
+    String? userId,
     String? type,
     String? fileUrl,
     String? prediction,
@@ -36,6 +39,7 @@ class Doc {
       assignmentTitle: assignmentTitle ?? this.assignmentTitle,
       assigmentDescription: assigmentDescription ?? this.assigmentDescription,
       docId: docId ?? this.docId,
+      userId: userId ?? this.userId,
       type: type ?? this.type,
       fileUrl: fileUrl ?? this.fileUrl,
       prediction: prediction ?? this.prediction,
@@ -50,6 +54,7 @@ class Doc {
       'assignmentTitle': assignmentTitle,
       'assigmentDescription': assigmentDescription,
       'docId': docId,
+      'userId': userId,
       'type': type,
       'fileUrl': fileUrl,
       'prediction': prediction,
@@ -64,12 +69,13 @@ class Doc {
       assignmentTitle: map['assignmentTitle'] as String,
       assigmentDescription: map['assigmentDescription'] as String,
       docId: map['docId'] as String,
+      userId: map['userId'] as String,
       type: map['type'] as String,
       fileUrl: map['fileUrl'] as String,
       prediction: map['prediction'] as String,
       createdAt: map['createdAt'] as String,
       tags: List<String>.from(
-        (map['tags']),
+        map['tags'],
       ),
     );
   }

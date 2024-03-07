@@ -3,7 +3,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/features/auth/controller/auth_controller.dart';
-import 'package:ml_project/features/auth/repository/auth_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ml_project/features/auth/screens/login_screen.dart';
 import 'package:ml_project/features/home/screens/fetch_screen.dart';

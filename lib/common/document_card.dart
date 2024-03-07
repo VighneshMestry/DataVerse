@@ -202,7 +202,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      "Posted on ${widget.document.createdAt}",
+                      "Posted on ${widget.document.createdAt.substring(0, 10)} at ${widget.document.createdAt.substring(21, 26)}",
                       style:
                           TextStyle(fontSize: 14, color: Colors.grey.shade700),
                     ),

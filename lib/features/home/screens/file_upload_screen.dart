@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:ml_project/constants/constants.dart';
+import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:ml_project/features/auth/repository/services.dart';
 import 'package:ml_project/models/document_model.dart';
 import 'package:uuid/uuid.dart';
@@ -54,6 +55,7 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
             fileName: fileNames[i],
             assignmentTitle: "New Assignment",
             assigmentDescription: "",
+            userId: ref.read(userProvider)!.uid,
             docId: docId,
             type: "pdf",
             fileUrl: singleFilePath,
