@@ -23,6 +23,7 @@ class FetchScreen extends ConsumerStatefulWidget {
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _FetchScreenState();
 }
+
 // AIDS - 0, DMBI - 1, EHF - 2, WEBX - 3
 class _FetchScreenState extends ConsumerState<FetchScreen> {
   bool isPermission = false;
@@ -124,7 +125,7 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     checkPermission();
     loadModel();
   }
@@ -157,10 +158,10 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                   //         body: "This is notificaiton",
                   //         android: AndroidNotification(channelId: "0")));
                   // await n.showNotification(message);
+                  // setState(() {});
                   ref.read(authControllerProvider.notifier).logOut();
-                  ref.read(userProvider.notifier).update((state) => null);
                   Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const LoginScreen()));
+                      builder: (context) => const LoginScreen()));
                 },
                 icon: const Icon(
                   Icons.search,
