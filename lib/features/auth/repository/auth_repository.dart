@@ -30,36 +30,38 @@ class AuthRepository {
 
   Future<UserModel> signInWithGoogle() async {
     try {
-      print("1111111111111111111111111111111111111111111111111111");
+      UserCredential userCredential;
+      GoogleSignIn _googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      late UserModel? _userModel;
+
       final googleAuth = await googleUser?.authentication;
 
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
+      userCredential = await _auth.signInWithCredential(credential);
 
-      UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+      // UserModel userModel;
 
-      UserModel userModel;
-      print("2222222222222222222222222222222222222222222222222222222222222222222");
       if (userCredential.additionalUserInfo!.isNewUser) {
-        userModel = UserModel(
-          name: userCredential.user!.displayName ?? "No Name",
-          profilePic: "",
-          uid: userCredential.user!.uid,
-          isAuthenticated: true,
-          subject: [],
-        );
-        print("33333333333333333333333333333333333333333333333333333333333333333333333333333");
-        await _users.doc(userCredential.user!.uid).set(userModel.toMap());
+          _userModel = UserModel(
+              name: userCredential.user!.displayName ?? "No Name",
+              profilePic: userCredential.user!.photoURL!,
+              uid: userCredential.user!.uid,
+              isAuthenticated: true,
+              subject: []);
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(userCredential.user!.uid)
+            .set(_userModel.toMap());
       } else {
-        print("444444444444444444444444444444444444444444444444444444444444444");
-        userModel = await getUserData(userCredential.user!.uid).first;
-        print("666666666666666666666666666666666666666666666666666666666666");
+        _userModel = await getUserData(userCredential.user!.uid).first;
       }
-      return userModel;
+      return _userModel;
+    } on FirebaseException catch (e) {
+      throw e.message!;
     } catch (e) {
       throw e.toString();
     }

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:ml_project/models/document_model.dart';
 
 
@@ -64,7 +63,7 @@ class MyClassroomServices {
             // Here ths "event" received is in QuerySnapshot<Object> format so the event is converted to Community model by converting the event to community model and adding to the list
             print(Doc.fromMap(docs.data() as Map<String, dynamic>));
             Doc doc = Doc.fromMap(docs.data() as Map<String, dynamic>);
-            documents.add(Doc.fromMap(docs.data() as Map<String, dynamic>));
+            documents.add(doc);
           }
           print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
           return documents;
@@ -92,7 +91,7 @@ class MyClassroomServices {
             // Here ths "event" received is in QuerySnapshot<Object> format so the event is converted to Community model by converting the event to community model and adding to the list
             print(Doc.fromMap(docs.data() as Map<String, dynamic>));
             Doc doc = Doc.fromMap(docs.data() as Map<String, dynamic>);
-            documents.add(Doc.fromMap(docs.data() as Map<String, dynamic>));
+            documents.add(doc);
           }
           print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
           return documents;

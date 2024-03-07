@@ -20,7 +20,6 @@
 //   State<HomeScreen> createState() => _HomeScreenState();
 // }
 
-
 // class _HomeScreenState extends State<HomeScreen> {
 //   List<File> files = [];
 //   List<String> fileNames = [];
@@ -304,3 +303,59 @@
 //     );
 //   }
 // }
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ml_project/constants/custom_bottom_bar_icons.dart';
+import 'package:ml_project/features/classroom/screens/classroom_screen.dart';
+import 'package:ml_project/features/home/screens/fetch_screen.dart';
+
+class CustomBottomNavigationBar extends ConsumerStatefulWidget {
+  const CustomBottomNavigationBar({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      CustomBottomNavigationBarState();
+}
+
+class CustomBottomNavigationBarState
+    extends ConsumerState<CustomBottomNavigationBar> {
+  int _page = 0;
+
+  void onPageChange(int page) {
+    setState(() {
+      _page = page;
+    });
+  }
+
+  static const screens = [
+    FetchScreen(),
+    ClassroomScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: screens[_page],
+      bottomNavigationBar: CupertinoTabBar(
+        height: 60,
+        border: const Border(top: BorderSide.none),
+        activeColor: Colors.blue.shade800,
+        backgroundColor: Colors.white,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_rounded),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CustomBottomBarIcons.clipboard_list),
+            label: '',
+          ),
+        ],
+        onTap: onPageChange,
+        currentIndex: _page,
+      ),
+    );
+  }
+}

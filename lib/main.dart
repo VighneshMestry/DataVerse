@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ml_project/features/auth/screens/login_screen.dart';
+import 'package:ml_project/features/home/screens/custom_bottom_bar.dart';
 import 'package:ml_project/features/home/screens/fetch_screen.dart';
 import 'package:ml_project/models/user_model.dart';
 import 'firebase_options.dart';
@@ -51,7 +52,7 @@ class MyApp extends ConsumerWidget {
               return const MaterialApp(
                 debugShowCheckedModeBanner: false,
                 title: 'ML Application',
-                home: FetchScreen());
+                home: CustomBottomNavigationBar());
             } else {
               return const MaterialApp(
                 debugShowCheckedModeBanner: false,

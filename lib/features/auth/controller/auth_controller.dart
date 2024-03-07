@@ -1,13 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/features/auth/repository/auth_repository.dart';
+import 'package:ml_project/features/home/screens/fetch_screen.dart';
 import 'package:ml_project/models/user_model.dart';
 
 final userProvider = StateProvider<UserModel?>((ref) => null);
 
 final authControllerProvider = StateNotifierProvider<AuthController, bool>(
   (ref) => AuthController(
-    authRepository: ref.read(authRepositoryProvider),
+    authRepository: ref.watch(authRepositoryProvider),
     ref: ref,
   ),
 );
@@ -28,9 +30,13 @@ class AuthController extends StateNotifier<bool> {
 
   Stream<User?> get authStateChange => _authRepository.authStateChange;
 
-  void signInWithGoogle() async {
+void signInWithGoogle(BuildContext context) async {
+    state = true;
     final user = await _authRepository.signInWithGoogle();
+    state = false;
     _ref.read(userProvider.notifier).update((state) => user);
+    
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => FetchScreen()));
   }
 
   Stream<UserModel> getUserData(String uid) {
