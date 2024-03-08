@@ -1,13 +1,10 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
-
 class Subject {
   final String name;
   final String subjectId;
   final String subjectType;
   final String backGroundImageUrl;
   final String createdBy;
+  final String subjectJoiningCode;
   final List<String> members;
   Subject({
     required this.name,
@@ -15,6 +12,7 @@ class Subject {
     required this.subjectType,
     required this.backGroundImageUrl,
     required this.createdBy,
+    required this.subjectJoiningCode,
     required this.members,
   });
 
@@ -25,6 +23,7 @@ class Subject {
     String? subjectType,
     String? backGroundImageUrl,
     String? createdBy,
+    String? subjectJoiningCode,
     List<String>? members,
   }) {
     return Subject(
@@ -33,6 +32,7 @@ class Subject {
       subjectType: subjectType ?? this.subjectType,
       backGroundImageUrl: backGroundImageUrl ?? this.backGroundImageUrl,
       createdBy: createdBy ?? this.createdBy,
+      subjectJoiningCode: subjectJoiningCode ?? this.subjectJoiningCode,
       members: members ?? this.members,
     );
   }
@@ -44,6 +44,7 @@ class Subject {
       'subjectType': subjectType,
       'backGroundImageUrl': backGroundImageUrl,
       'createdBy': createdBy,
+      'subjectJoiningCode': subjectJoiningCode,
       'members': members,
     };
   }
@@ -55,39 +56,8 @@ class Subject {
       subjectType: map['subjectType'] as String,
       backGroundImageUrl: map['backGroundImageUrl'] as String,
       createdBy: map['createdBy'] as String,
-      members: List<String>.from((map['members'] as List<String>),
-    ));
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory Subject.fromJson(String source) => Subject.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  @override
-  String toString() {
-    return 'Subject(name: $name, subjectId: $subjectId, subjectType: $subjectType, backGroundImageUrl: $backGroundImageUrl, createdBy: $createdBy, members: $members)';
-  }
-
-  @override
-  bool operator ==(covariant Subject other) {
-    if (identical(this, other)) return true;
-  
-    return 
-      other.name == name &&
-      other.subjectId == subjectId &&
-      other.subjectType == subjectType &&
-      other.backGroundImageUrl == backGroundImageUrl &&
-      other.createdBy == createdBy &&
-      listEquals(other.members, members);
-  }
-
-  @override
-  int get hashCode {
-    return name.hashCode ^
-      subjectId.hashCode ^
-      subjectType.hashCode ^
-      backGroundImageUrl.hashCode ^
-      createdBy.hashCode ^
-      members.hashCode;
+      subjectJoiningCode: map['subjectJoiningCode'] as String,
+      members: List<String>.from((map['members']),)
+    );
   }
 }

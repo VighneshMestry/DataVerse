@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ml_project/constants/constants.dart';
 
 import 'package:ml_project/models/subject_model.dart';
 
@@ -21,8 +22,9 @@ class SubjectCard extends ConsumerWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: ExactAssetImage(
-                subject.backGroundImageUrl),
+            image: subject.backGroundImageUrl.isNotEmpty ? ExactAssetImage(
+              subject.backGroundImageUrl,
+            ) : ExactAssetImage (Constants.subjectBackground[0]),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.white.withOpacity(0.3),
@@ -57,12 +59,26 @@ class SubjectCard extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis),
                   ),
                   const SizedBox(height: 40),
-                  Text(
-                    "Subject Type: ${subject.subjectType}",
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        overflow: TextOverflow.ellipsis),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Subject Type: ${subject.subjectType}",
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            overflow: TextOverflow.ellipsis),
+                      ),
+                      (subject.subjectJoiningCode.isNotEmpty)
+                          ? Text(
+                              "Subject Type: ${subject.subjectJoiningCode}",
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  overflow: TextOverflow.ellipsis),
+                            )
+                          : const SizedBox(),
+                    ],
                   )
                 ],
               ),

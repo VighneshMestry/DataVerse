@@ -5,11 +5,11 @@ class Constants {
   static const subjectTypes = ["AIDS", "DMBI", "EHF", "WEBX"];
 
   static final defaultSubjects = [
-    Subject(name: "Artificial Intelligence and Data Science", subjectId: "0", subjectType: "AIDS", backGroundImageUrl: "assets/subjectBackgroundImages/aidsImage.jpg", createdBy: "You", members: []),
-    Subject(name: "Data Mining and Business Intelligence", subjectId: "1", subjectType: "DMBI", backGroundImageUrl: "assets/subjectBackgroundImages/dbmiImage.jpeg", createdBy: "You", members: []),
-    Subject(name: "Ethical Hacking and Forensics", subjectId: "2", subjectType: "EHF", backGroundImageUrl: "assets/subjectBackgroundImages/ehfImage.jpg", createdBy: "You", members: []),
-    Subject(name: "WebX", subjectId: "3", subjectType: "WEBX", backGroundImageUrl: "assets/subjectBackgroundImages/webxImage.jpg", createdBy: "You", members: []),
-    Subject(name: "Wireless Technology", subjectId: "4", subjectType: "WT", backGroundImageUrl: "assets/subjectBackgroundImages/wtImage.jpeg", createdBy: "You", members: []),
+    Subject(name: "Artificial Intelligence and Data Science", subjectId: "0", subjectType: "AIDS", backGroundImageUrl: "assets/subjectBackgroundImages/aidsImage.jpg", createdBy: "You", members: [], subjectJoiningCode: ""),
+    Subject(name: "Data Mining and Business Intelligence", subjectId: "1", subjectType: "DMBI", backGroundImageUrl: "assets/subjectBackgroundImages/dbmiImage.jpeg", createdBy: "You", members: [], subjectJoiningCode: ""),
+    Subject(name: "Ethical Hacking and Forensics", subjectId: "2", subjectType: "EHF", backGroundImageUrl: "assets/subjectBackgroundImages/ehfImage.jpg", createdBy: "You", members: [], subjectJoiningCode: ""),
+    Subject(name: "WebX", subjectId: "3", subjectType: "WEBX", backGroundImageUrl: "assets/subjectBackgroundImages/webxImage.jpg", createdBy: "You", members: [], subjectJoiningCode: ""),
+    Subject(name: "Wireless Technology", subjectId: "4", subjectType: "WT", backGroundImageUrl: "assets/subjectBackgroundImages/wtImage.jpeg", createdBy: "You", members: [], subjectJoiningCode: ""),
   ];
 
   static final subjectColors = [
