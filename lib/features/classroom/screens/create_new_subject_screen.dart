@@ -22,7 +22,9 @@ class _CreateNewSubjectScreenState
   final TextEditingController _subjectJoiningCode = TextEditingController();
 
   void createNewSubject(Subject subject) {
-    ref.read(classroomControllerProvider.notifier).createNewSubject(subject, context);
+    ref
+        .read(classroomControllerProvider.notifier)
+        .createNewSubject(subject, context);
   }
 
   @override
@@ -50,18 +52,26 @@ class _CreateNewSubjectScreenState
                     _subjectType.text.isNotEmpty &&
                     _createdBy.text.isNotEmpty &&
                     _subjectJoiningCode.text.isNotEmpty) {
-                  String subjectId = Uuid().v1();
-                  String userId = ref.read(userProvider)!.uid;
-                  Subject subject = Subject(
-                    name: _className.text.trim(),
-                    subjectId: subjectId,
-                    subjectType: _subjectType.text.trim(),
-                    backGroundImageUrl: "",
-                    createdBy: _createdBy.text.trim(),
-                    subjectJoiningCode: _subjectJoiningCode.text.trim().toUpperCase(),
-                    members: [userId],
-                  );
-                  createNewSubject(subject);
+                  if (_subjectJoiningCode.text.trim().length != 8) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                            "The joining code must be 8 alphanumeric characters")));
+                  } else {
+                    String subjectId = const Uuid().v1();
+                    String userId = ref.read(userProvider)!.uid;
+                    String userName = ref.read(userProvider)!.name;
+                    Subject subject = Subject(
+                      name: _className.text.trim(),
+                      subjectId: subjectId,
+                      subjectType: _subjectType.text.trim(),
+                      backGroundImageUrl: "",
+                      createdBy: userName,
+                      subjectJoiningCode:
+                          _subjectJoiningCode.text.trim().toUpperCase(),
+                      members: [userId],
+                    );
+                    createNewSubject(subject);
+                  }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Please fill all fields")));
@@ -105,6 +115,9 @@ class _CreateNewSubjectScreenState
                   controller: _subjectJoiningCode,
                   hintText: 'Subject joining code',
                 ),
+                const SizedBox(height: 10),
+                const Text(
+                    "* The joining code must be 8 alphanumeric characters *")
               ],
             ),
           ),

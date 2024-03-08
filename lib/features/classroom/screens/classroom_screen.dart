@@ -6,6 +6,7 @@ import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:ml_project/features/auth/screens/login_screen.dart';
 import 'package:ml_project/features/classroom/controller/classroom_controller.dart';
 import 'package:ml_project/features/classroom/screens/create_new_subject_screen.dart';
+import 'package:ml_project/features/classroom/screens/joining_classroom_screen.dart';
 
 class ClassroomScreen extends ConsumerStatefulWidget {
   const ClassroomScreen({super.key});
@@ -153,7 +154,10 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
                                       fontWeight: FontWeight.normal)),
                             ),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          JoiningClassroomScreen())),
                               style: TextButton.styleFrom(
                                   minimumSize: const Size(double.infinity, 30)),
                               child: const Text("Join Subject",

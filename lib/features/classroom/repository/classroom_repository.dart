@@ -54,4 +54,8 @@ class ClassroomRepository {
       return subjects;
     });
   }
+
+  Future<void> joinSubject(String subjectJoiningCode) {
+    return _subjects.where("subjectJoiningCode", isEqualTo: subjectJoiningCode).get();
+  }
 }
