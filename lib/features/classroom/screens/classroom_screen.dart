@@ -6,7 +6,6 @@ import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:ml_project/features/auth/screens/login_screen.dart';
 import 'package:ml_project/features/classroom/controller/classroom_controller.dart';
 import 'package:ml_project/features/classroom/screens/create_new_subject_screen.dart';
-import 'package:ml_project/features/home/screens/my_subject_docs_display.dart';
 
 class ClassroomScreen extends ConsumerStatefulWidget {
   const ClassroomScreen({super.key});
