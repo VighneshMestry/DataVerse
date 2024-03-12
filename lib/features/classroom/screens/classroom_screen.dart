@@ -9,7 +9,6 @@ import 'package:ml_project/features/classroom/controller/classroom_controller.da
 import 'package:ml_project/features/classroom/screens/create_new_subject_screen.dart';
 import 'package:ml_project/features/classroom/screens/joining_classroom_screen.dart';
 import 'package:ml_project/features/classroom/screens/subject_docs_display.dart';
-import 'package:ml_project/features/home/screens/my_subject_docs_display.dart';
 
 class ClassroomScreen extends ConsumerStatefulWidget {
   const ClassroomScreen({super.key});

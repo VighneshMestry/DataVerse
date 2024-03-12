@@ -12,7 +12,6 @@ import 'package:ml_project/features/auth/repository/services.dart';
 import 'package:ml_project/features/classroom/controller/classroom_controller.dart';
 import 'package:ml_project/features/classroom/repository/classroom_repository.dart';
 import 'package:ml_project/models/document_model.dart';
-import 'package:ml_project/models/subject_model.dart';
 
 class DetailedFileUploadScreen extends ConsumerStatefulWidget {
   final String subjectJoiningCode;
@@ -61,6 +60,7 @@ class _DetailedFileUploadScreenState
             tags: _tags.text.trim().split(' '),
           ),
         );
+    Navigator.of(context).pop();
   }
 
   @override

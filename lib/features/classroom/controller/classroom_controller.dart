@@ -33,6 +33,7 @@ class ClassroomController extends StateNotifier<bool> {
       await _classroomRepository.createNewSubject(subject);
       // ignore: use_build_context_synchronously
       Navigator.of(context).pop();
+      Navigator.of(context).pop();
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Created ${subject.name}")));

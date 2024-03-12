@@ -52,7 +52,7 @@ class _CreateNewSubjectScreenState
                     _subjectType.text.isNotEmpty &&
                     _createdBy.text.isNotEmpty &&
                     _subjectJoiningCode.text.isNotEmpty) {
-                  if (_subjectJoiningCode.text.trim().length != 8) {
+                  if (_subjectJoiningCode.text.trim().length < 8) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text(
                             "The joining code must be 8 alphanumeric characters")));

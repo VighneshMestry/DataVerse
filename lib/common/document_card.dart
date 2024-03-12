@@ -5,8 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/constants/document_icons_icons.dart';
-
-import 'package:ml_project/constants/my_flutter_app_icons.dart';
 import 'package:ml_project/directory_path.dart';
 import 'package:ml_project/features/auth/repository/services.dart';
 import 'package:ml_project/models/document_model.dart';
@@ -225,7 +223,8 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                 barrierDismissible: true,
                                 context: context,
                                 builder: (context) {
-                                  print("Downloading dialog______________________________________________________");
+                                  print(
+                                      "Downloading dialog______________________________________________________");
                                   return AlertDialog(
                                     content: Stack(
                                       alignment: Alignment.center,
@@ -259,8 +258,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                           child: Row(
                             children: [
                               (widget.document.type == "pdf")
-                                  ? Icon(Icons.note,
-                                      color: Colors.red.shade700)
+                                  ? Icon(Icons.note, color: Colors.red.shade700)
                                   : ((widget.document.type == "docx")
                                       ? Icon(DocumentIcons.doc_text,
                                           color: Colors.blue.shade700)
@@ -273,20 +271,82 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                         ),
                       ),
                       const SizedBox(
-                        height: 50,
+                        height: 45,
                       ),
                     ],
                   )
-                : SizedBox(
-                    height: 90,
-                    child: Text(
-                      widget.document.assigmentDescription,
-                      style: const TextStyle(fontSize: 16),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 4,
-                    ),
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 45,
+                        child: Text(
+                          widget.document.assigmentDescription,
+                          style: const TextStyle(fontSize: 16),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () async {
+                          await checkFileExist();
+                          fileExists ? openfile() : startDownload();
+                          if (downloading) {
+                            // ignore: use_build_context_synchronously
+                            showDialog(
+                                barrierDismissible: true,
+                                context: context,
+                                builder: (context) {
+                                  print(
+                                      "Downloading dialog______________________________________________________");
+                                  return AlertDialog(
+                                    content: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        CircularProgressIndicator(
+                                          value: progress,
+                                          strokeWidth: 3,
+                                          backgroundColor: Colors.grey,
+                                          valueColor:
+                                              const AlwaysStoppedAnimation<
+                                                  Color>(Colors.blue),
+                                        ),
+                                        Text(
+                                          (progress * 100).toStringAsFixed(2),
+                                          style: const TextStyle(fontSize: 12),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                });
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.only(
+                              left: 15, right: 8, top: 8, bottom: 8),
+                          height: 40,
+                          width: 250,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade400),
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Row(
+                            children: [
+                              (widget.document.type == "pdf")
+                                  ? Icon(Icons.note, color: Colors.red.shade700)
+                                  : ((widget.document.type == "docx")
+                                      ? Icon(DocumentIcons.doc_text,
+                                          color: Colors.blue.shade700)
+                                      : Icon(DocumentIcons.table,
+                                          color: Colors.green.shade700)),
+                              const SizedBox(width: 10),
+                              Text(widget.document.fileName),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
             Container(
               height: 1,
               color: Colors.grey.shade300,
