@@ -60,6 +60,7 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                 assigmentDescription: "",
                 userId: ref.read(userProvider)!.uid,
                 docId: docId,
+                subjectJoiningCode: "",
                 type: "pdf",
                 fileUrl: singleFilePath,
                 prediction: Constants.subjectTypes[predictions],

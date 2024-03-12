@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/features/auth/controller/auth_controller.dart';
+import 'package:ml_project/models/document_model.dart';
 import 'package:ml_project/models/subject_model.dart';
 
 final classroomRepositoryProvider = Provider((ref) {
@@ -20,6 +23,9 @@ class ClassroomRepository {
 
   CollectionReference get _subjects =>
       _firebaseFirestore.collection("subjects");
+
+  CollectionReference get _docs =>
+      _firebaseFirestore.collection("documents");
 
   String get userId => _ref.read(userProvider)!.uid;
 
@@ -55,8 +61,16 @@ class ClassroomRepository {
     });
   }
 
-  Future<void> joinSubject(String subjectJoiningCode) {
+  Future<void> joinSubject(String subjectJoiningCode) async {
     String uid = _ref.watch(userProvider)!.uid;
-    return _subjects.doc(subjectJoiningCode).update({"members" : FieldValue.arrayUnion([uid])});
+    return await _subjects.doc(subjectJoiningCode).update({"members" : FieldValue.arrayUnion([uid])});
+  }
+
+  Future<void> uploadCustomDocument(Doc doc) async {
+    return await _docs.doc(doc.docId).set(doc.toMap());
+  }
+  
+  Future<FilePickerResult?> pickSingleFile(BuildContext context) {
+    return FilePicker.platform.pickFiles(allowMultiple: false);
   }
 }

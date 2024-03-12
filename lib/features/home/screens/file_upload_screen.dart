@@ -57,6 +57,7 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
             assigmentDescription: "",
             userId: ref.read(userProvider)!.uid,
             docId: docId,
+            subjectJoiningCode: "",
             type: "pdf",
             fileUrl: singleFilePath,
             prediction: Constants.subjectTypes[predictions],

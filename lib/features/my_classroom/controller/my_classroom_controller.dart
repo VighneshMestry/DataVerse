@@ -17,6 +17,13 @@ final myClassroomControllerProvider =
         .getMySubjectDocuments(type);
   });
 
+   final getClassroomDocumentsProvider =
+      StreamProvider.family((ref, String subjectJoiningCode) {
+    return ref
+        .watch(myClassroomControllerProvider.notifier)
+        .getClassroomDocuments(subjectJoiningCode);
+  });
+
   // final getUserDocumentsProvider = StreamProvider.family((ref, String userId) {
   //   return ref.watch(myClassroomControllerProvider).getUserDocuments(userId);
   // });
@@ -35,6 +42,10 @@ class MyClassroomController extends StateNotifier<bool> {
     String userId = _ref.read(userProvider)!.uid;
     print(userId);
     return _myClassroomServices.getMySubjectDocuments(userId, prediction);
+  }
+
+  Stream<List<Doc>> getClassroomDocuments(String subjectJoiningCode) {
+    return _myClassroomServices.getClassroomDocuments(subjectJoiningCode);
   }
  
 }

@@ -19,18 +19,18 @@ final servicesProvider = StateNotifierProvider<Services, bool>((ref) {
 // });
 
 class Services extends StateNotifier<bool> {
-  String uri = "http://192.168.0.102:4000";
+  String uri = "http://192.168.0.103:4000";
   // String  uri = "http://localhost:3000";
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Services() : super(false);
 
-  CollectionReference get _docs =>
-      _firestore.collection("documents");
+  CollectionReference get _myDocs =>
+      _firestore.collection("myDocuments");
 
   Future uploadToFirebase(Doc doc) async {
-    return await _docs.doc(doc.docId).set(doc.toMap());
+    return await _myDocs.doc(doc.docId).set(doc.toMap());
   }
 
   Future<void> uploadPDF(
@@ -53,7 +53,7 @@ class Services extends StateNotifier<bool> {
   }
 
   Future<void> updateNameDescriptionTags(Doc doc) async {
-    return await _docs.doc(doc.docId).update(doc.toMap());
+    return await _myDocs.doc(doc.docId).update(doc.toMap());
   }
 
   Future<FilePickerResult?> pickFile(BuildContext context) {

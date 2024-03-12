@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ml_project/check_permissions.dart';
 import 'package:ml_project/common/subject_card.dart';
 import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/features/auth/controller/auth_controller.dart';
@@ -7,6 +8,8 @@ import 'package:ml_project/features/auth/screens/login_screen.dart';
 import 'package:ml_project/features/classroom/controller/classroom_controller.dart';
 import 'package:ml_project/features/classroom/screens/create_new_subject_screen.dart';
 import 'package:ml_project/features/classroom/screens/joining_classroom_screen.dart';
+import 'package:ml_project/features/classroom/screens/subject_docs_display.dart';
+import 'package:ml_project/features/home/screens/my_subject_docs_display.dart';
 
 class ClassroomScreen extends ConsumerStatefulWidget {
   const ClassroomScreen({super.key});
@@ -17,6 +20,23 @@ class ClassroomScreen extends ConsumerStatefulWidget {
 }
 
 class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
+    bool isPermission = false;
+  CheckPermission checkAllPermissions = CheckPermission();
+
+  checkPermission() async {
+    var permission = await checkAllPermissions.isStoragePermission();
+    if (permission) {
+      setState(() {
+        isPermission = true;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkPermission();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,15 +91,15 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
                           itemBuilder: (context, index) {
                             return GestureDetector(
                               onTap: () {
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => MySubjectDocsDisplayScreen(
-                                //       isPermission: isPermission,
-                                //       subject: Constants.defaultSubjects[index],
-                                //     ),
-                                //   ),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SubjectDocsDisplyScreen(
+                                      isPermission: isPermission,
+                                      subject: data[index],
+                                    ),
+                                  ),
+                                );
                               },
                               child: SubjectCard(
                                 subject: data[index],
@@ -157,7 +177,7 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
                               onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          JoiningClassroomScreen())),
+                                          const JoiningClassroomScreen())),
                               style: TextButton.styleFrom(
                                   minimumSize: const Size(double.infinity, 30)),
                               child: const Text("Join Subject",

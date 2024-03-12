@@ -79,8 +79,9 @@ flutter:
   fonts:
     - family:  MyFlutterApp
       fonts:
-       - asset: assets/custom_icons/CustomBottomBar.ttf
-       - asset: assets/custom_icons/MyFlutterApp.ttf
+      - asset: assets/custom_icons/CustomBottomBar.ttf
+      - asset: assets/custom_icons/MyFlutterApp.ttf
+      - asset: assets/custom_icons/DocumentIcons.ttf
 
   # To add assets to your application, add an assets section, like this:
   assets:

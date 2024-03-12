@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ml_project/constants/document_icons_icons.dart';
 
 import 'package:ml_project/constants/my_flutter_app_icons.dart';
 import 'package:ml_project/directory_path.dart';
@@ -258,12 +259,12 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                           child: Row(
                             children: [
                               (widget.document.type == "pdf")
-                                  ? Icon(CustomIcons.file_pdf,
+                                  ? Icon(Icons.note,
                                       color: Colors.red.shade700)
                                   : ((widget.document.type == "docx")
-                                      ? Icon(CustomIcons.doc_text,
+                                      ? Icon(DocumentIcons.doc_text,
                                           color: Colors.blue.shade700)
-                                      : Icon(CustomIcons.table,
+                                      : Icon(DocumentIcons.table,
                                           color: Colors.green.shade700)),
                               const SizedBox(width: 10),
                               Text(widget.document.fileName),

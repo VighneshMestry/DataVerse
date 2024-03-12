@@ -71,7 +71,7 @@ class SubjectCard extends ConsumerWidget {
                       ),
                       (subject.subjectJoiningCode.isNotEmpty)
                           ? Text(
-                              "Subject Type: ${subject.subjectJoiningCode}",
+                              "Subject Joining code: ${subject.subjectJoiningCode}",
                               style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 14,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:ml_project/features/classroom/repository/classroom_repository.dart';
+import 'package:ml_project/models/document_model.dart';
 import 'package:ml_project/models/subject_model.dart';
 
 final classroomControllerProvider =
@@ -55,5 +56,9 @@ class ClassroomController extends StateNotifier<bool> {
 
   void joinSubject(String subjectJoiningCode) {
     _ref.watch(classroomRepositoryProvider).joinSubject(subjectJoiningCode);
+  }
+
+  void uploadCustomDocument(Doc doc) {
+    _ref.watch(classroomRepositoryProvider).uploadCustomDocument(doc);
   }
 }

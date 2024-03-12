@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/common/custom_textfield.dart';
 import 'package:ml_project/features/classroom/controller/classroom_controller.dart';
-import 'package:ml_project/models/subject_model.dart';
 
 class JoiningClassroomScreen extends ConsumerStatefulWidget {
   const JoiningClassroomScreen({super.key});
@@ -40,8 +39,8 @@ class _JoiningClassroomScreenState
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
                 ),
-                minimumSize: Size(100, 30),
-                maximumSize: Size(100, 30),
+                minimumSize: const Size(100, 30),
+                maximumSize: const Size(100, 30),
               ),
               onPressed: () {
                 joinClassroom(_subjectJoiningCode.text.trim());
