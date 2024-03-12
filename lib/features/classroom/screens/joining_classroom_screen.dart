@@ -1,12 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/common/custom_textfield.dart';
+import 'package:ml_project/features/classroom/controller/classroom_controller.dart';
+import 'package:ml_project/models/subject_model.dart';
 
-class JoiningClassroomScreen extends ConsumerWidget {
+class JoiningClassroomScreen extends ConsumerStatefulWidget {
   const JoiningClassroomScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _JoiningClassroomScreenState();
+}
+
+class _JoiningClassroomScreenState
+    extends ConsumerState<JoiningClassroomScreen> {
+
+  void joinClassroom (String subjectJoiningCode) {
+    ref.read(classroomControllerProvider.notifier).joinSubject(subjectJoiningCode);
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Joined the subject $subjectJoiningCode successfully")));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     TextEditingController _subjectJoiningCode = TextEditingController();
     return Scaffold(
       appBar: AppBar(
@@ -27,34 +44,7 @@ class JoiningClassroomScreen extends ConsumerWidget {
                 maximumSize: Size(100, 30),
               ),
               onPressed: () {
-                // if (_className.text.isNotEmpty &&
-                //     _subjectType.text.isNotEmpty &&
-                //     _createdBy.text.isNotEmpty &&
-                //     _subjectJoiningCode.text.isNotEmpty) {
-                //   if (_subjectJoiningCode.text.trim().length != 8) {
-                //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                //         content: Text(
-                //             "The joining code must be 8 alphanumeric characters")));
-                //   } else {
-                //     String subjectId = const Uuid().v1();
-                //     String userId = ref.read(userProvider)!.uid;
-                //     String userName = ref.read(userProvider)!.name;
-                //     Subject subject = Subject(
-                //       name: _className.text.trim(),
-                //       subjectId: subjectId,
-                //       subjectType: _subjectType.text.trim(),
-                //       backGroundImageUrl: "",
-                //       createdBy: userName,
-                //       subjectJoiningCode:
-                //           _subjectJoiningCode.text.trim().toUpperCase(),
-                //       members: [userId],
-                //     );
-                //     createNewSubject(subject);
-                //   }
-                // } else {
-                //   ScaffoldMessenger.of(context).showSnackBar(
-                //       const SnackBar(content: Text("Please fill all fields")));
-                // }
+                joinClassroom(_subjectJoiningCode.text.trim());
               },
               child: const Text(
                 "Join",
@@ -80,7 +70,6 @@ class JoiningClassroomScreen extends ConsumerWidget {
                   hintText: 'Joining code',
                 ),
                 const SizedBox(height: 10),
-                
                 const Text(
                     "* The joining code must be 8 alphanumeric characters *")
               ],

@@ -103,7 +103,7 @@ class _CreateNewSubjectScreenState
                 const SizedBox(height: 10),
                 CustomTextField(
                   controller: _subjectType,
-                  hintText: 'Subject Code',
+                  hintText: 'Subject Type',
                 ),
                 const SizedBox(height: 10),
                 CustomTextField(

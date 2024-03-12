@@ -52,4 +52,8 @@ class ClassroomController extends StateNotifier<bool> {
     String userId = _ref.watch(userProvider)!.uid;
     return _classroomRepository.getJoinedClassroom(userId);
   }
+
+  void joinSubject(String subjectJoiningCode) {
+    _ref.watch(classroomRepositoryProvider).joinSubject(subjectJoiningCode);
+  }
 }

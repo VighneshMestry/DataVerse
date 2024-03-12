@@ -36,7 +36,7 @@ class ClassroomRepository {
       // Create a new subject document in Firestore
       await _firebaseFirestore
           .collection("subjects")
-          .doc()
+          .doc(subject.subjectJoiningCode)
           .set(subject.toMap());
     }
   }
@@ -56,6 +56,7 @@ class ClassroomRepository {
   }
 
   Future<void> joinSubject(String subjectJoiningCode) {
-    return _subjects.where("subjectJoiningCode", isEqualTo: subjectJoiningCode).get();
+    String uid = _ref.watch(userProvider)!.uid;
+    return _subjects.doc(subjectJoiningCode).update({"members" : FieldValue.arrayUnion([uid])});
   }
 }
