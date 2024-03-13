@@ -50,6 +50,7 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
           downloadUrls.add(singleFilePath);
           fileContent.add(content);
           predictions = predict(content);
+          print("$predictions PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
           final docId = const Uuid().v1();
           await ref.read(servicesProvider.notifier).uploadToFirebase(Doc(
             fileName: fileNames[i],

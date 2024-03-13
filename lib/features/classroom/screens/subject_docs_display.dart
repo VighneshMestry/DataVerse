@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/common/document_card.dart';
+import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:ml_project/features/classroom/screens/detailed_file_upload_screen.dart';
 import 'package:ml_project/features/my_classroom/controller/my_classroom_controller.dart';
 import 'package:ml_project/models/subject_model.dart';
@@ -83,7 +84,7 @@ class _SubjectDocsDisplyScreenState
                       const Center(child: CircularProgressIndicator()),
                 )
             : const Text("Permission Denied"),
-        floatingActionButton: Container(
+        floatingActionButton: (ref.read(userProvider)!.uid != widget.subject.creatorId) ? const SizedBox() : Container(
           padding: const EdgeInsets.all(5.0),
           height: 70,
           width: 70,

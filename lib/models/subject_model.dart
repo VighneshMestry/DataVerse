@@ -1,9 +1,15 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+
 class Subject {
   final String name;
   final String subjectId;
   final String subjectType;
   final String backGroundImageUrl;
   final String createdBy;
+  final String creatorId;
   final String subjectJoiningCode;
   final List<String> members;
   Subject({
@@ -12,6 +18,7 @@ class Subject {
     required this.subjectType,
     required this.backGroundImageUrl,
     required this.createdBy,
+    required this.creatorId,
     required this.subjectJoiningCode,
     required this.members,
   });
@@ -23,6 +30,7 @@ class Subject {
     String? subjectType,
     String? backGroundImageUrl,
     String? createdBy,
+    String? creatorId,
     String? subjectJoiningCode,
     List<String>? members,
   }) {
@@ -32,6 +40,7 @@ class Subject {
       subjectType: subjectType ?? this.subjectType,
       backGroundImageUrl: backGroundImageUrl ?? this.backGroundImageUrl,
       createdBy: createdBy ?? this.createdBy,
+      creatorId: creatorId ?? this.creatorId,
       subjectJoiningCode: subjectJoiningCode ?? this.subjectJoiningCode,
       members: members ?? this.members,
     );
@@ -44,6 +53,7 @@ class Subject {
       'subjectType': subjectType,
       'backGroundImageUrl': backGroundImageUrl,
       'createdBy': createdBy,
+      'creatorId': creatorId,
       'subjectJoiningCode': subjectJoiningCode,
       'members': members,
     };
@@ -56,6 +66,7 @@ class Subject {
       subjectType: map['subjectType'] as String,
       backGroundImageUrl: map['backGroundImageUrl'] as String,
       createdBy: map['createdBy'] as String,
+      creatorId: map['creatorId'] as String,
       subjectJoiningCode: map['subjectJoiningCode'] as String,
       members: List<String>.from((map['members']),)
     );

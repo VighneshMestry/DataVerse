@@ -51,11 +51,13 @@ class MyApp extends ConsumerWidget {
               return const MaterialApp(
                 debugShowCheckedModeBanner: false,
                 title: 'ML Application',
+                // theme: ThemeData(appBarTheme: AppBarTheme(color: Colors.black), scaffoldBackgroundColor: Colors.black),
                 home: CustomBottomNavigationBar());
             } else {
               return const MaterialApp(
                 debugShowCheckedModeBanner: false,
                 title: 'ML Application',
+                // theme: ThemeData(appBarTheme: AppBarTheme(color: Colors.black), scaffoldBackgroundColor: Colors.black),
                 home: LoginScreen(),
               );
             }
@@ -63,14 +65,6 @@ class MyApp extends ConsumerWidget {
           error: (error, stackTrace) => const Text("Error"),
           loading: () => const CircularProgressIndicator(),
         );
-    // return const MaterialApp(
-    //   debugShowCheckedModeBanner: false,
-    //   title: 'Flutter Demo',
-    //   // theme: ThemeData(
-    //   //   // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-    //   //   // useMaterial3: true,
-    //   // ),
-    //   home: LoginScreen(),
     // );
   }
 }

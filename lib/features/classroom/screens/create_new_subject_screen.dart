@@ -66,6 +66,7 @@ class _CreateNewSubjectScreenState
                       subjectType: _subjectType.text.trim(),
                       backGroundImageUrl: "",
                       createdBy: userName,
+                      creatorId: userId,
                       subjectJoiningCode:
                           _subjectJoiningCode.text.trim().toUpperCase(),
                       members: [userId],
