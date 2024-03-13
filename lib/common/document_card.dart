@@ -265,7 +265,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                       : Icon(DocumentIcons.table,
                                           color: Colors.green.shade700)),
                               const SizedBox(width: 10),
-                              Text(widget.document.fileName),
+                              Text( (widget.document.fileName.length > 20) ? "${widget.document.fileName.substring(0, 20)}.jpg" : widget.document.fileName),
                             ],
                           ),
                         ),

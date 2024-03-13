@@ -349,7 +349,7 @@ class CustomBottomNavigationBarState
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(CustomBottomBarIcons.clipboard_list),
+            icon: Icon(Icons.book),
             label: '',
           ),
         ],
