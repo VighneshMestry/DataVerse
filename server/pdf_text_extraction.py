@@ -3,9 +3,6 @@ import sys
 from docx import Document
 import fitz
 import requests
-import cv2
-import requests
-import numpy as np
 import pytesseract
 from PIL import Image
 

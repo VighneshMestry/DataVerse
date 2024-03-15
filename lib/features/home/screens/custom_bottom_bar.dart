@@ -307,7 +307,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ml_project/constants/custom_bottom_bar_icons.dart';
 import 'package:ml_project/features/classroom/screens/classroom_screen.dart';
 import 'package:ml_project/features/home/screens/fetch_screen.dart';
 
@@ -346,11 +345,11 @@ class CustomBottomNavigationBarState
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_rounded),
-            label: '',
+            label: 'Me',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
-            label: '',
+            label: 'Classroom',
           ),
         ],
         onTap: onPageChange,
