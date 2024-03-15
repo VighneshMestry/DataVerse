@@ -90,12 +90,20 @@ class _CreateNewSubjectScreenState
           )
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            child: Column(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Container(
+                  decoration: BoxDecoration(color: Colors.grey.shade400),
+                  height: 1,
+                ),
+              ),
+              const SizedBox(height: 20),
+            Column(
               children: [
                 CustomTextField(
                   controller: _className,
@@ -121,8 +129,8 @@ class _CreateNewSubjectScreenState
                     "* The joining code must be 8 alphanumeric characters *")
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

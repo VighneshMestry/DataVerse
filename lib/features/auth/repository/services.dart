@@ -19,7 +19,7 @@ final servicesProvider = StateNotifierProvider<Services, bool>((ref) {
 // });
 
 class Services extends StateNotifier<bool> {
-  String uri = "http://192.168.0.103:4000";
+  String uri = "http://192.168.0.104:4000";
   // String  uri = "http://localhost:3000";
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

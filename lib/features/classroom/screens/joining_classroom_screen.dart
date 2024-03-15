@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/common/custom_textfield.dart';
+import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:ml_project/features/classroom/controller/classroom_controller.dart';
 
 class JoiningClassroomScreen extends ConsumerStatefulWidget {
@@ -13,12 +14,14 @@ class JoiningClassroomScreen extends ConsumerStatefulWidget {
 
 class _JoiningClassroomScreenState
     extends ConsumerState<JoiningClassroomScreen> {
-
-  void joinClassroom (String subjectJoiningCode) {
-    ref.read(classroomControllerProvider.notifier).joinSubject(subjectJoiningCode);
+  void joinClassroom(String subjectJoiningCode) {
+    ref
+        .read(classroomControllerProvider.notifier)
+        .joinSubject(subjectJoiningCode);
     Navigator.of(context).pop();
     Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Joined the subject $subjectJoiningCode successfully")));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Joined the subject $subjectJoiningCode successfully")));
   }
 
   @override
@@ -57,24 +60,82 @@ class _JoiningClassroomScreenState
           )
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            child: Column(
+      body: Padding(
+        padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Container(
+                decoration: BoxDecoration(color: Colors.grey.shade400),
+                height: 1,
+              ),
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              "You're currently signed in as",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 15),
+            Row(
               children: [
-                CustomTextField(
-                  controller: _subjectJoiningCode,
-                  hintText: 'Joining code',
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    radius: 24,
+                    backgroundColor: Colors.green.shade900,
+                    child: const Icon(
+                      Icons.person_rounded,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 10),
-                const Text(
-                    "* The joining code must be 8 alphanumeric characters *")
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      ref.read(userProvider)!.name,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    Text(
+                      "mestryvighnesh27@gmail.com",
+                      style: TextStyle(color: Colors.grey.shade600),
+                    )
+                  ],
+                )
               ],
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(color: Colors.grey.shade400),
+              height: 1,
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              "Ask your teacher for the joining code, then enter it here.",
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 15),
+            CustomTextField(
+              controller: _subjectJoiningCode,
+              hintText: 'Joining code',
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              "To sign in with joining code",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 15),
+            const Text("* Use an authorised account", style: TextStyle(fontSize: 16)),
+            const SizedBox(height: 10),
+            const Text("* The joining code must be more than 8 alphanumeric characters", style: TextStyle(fontSize: 16)),
+            const SizedBox(height: 10),
+            const Text("If you are having trouble to joining the subject, Contact us", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+          ],
+        ),
       ),
     );
   }

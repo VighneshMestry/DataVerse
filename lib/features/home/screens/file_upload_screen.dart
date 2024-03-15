@@ -23,14 +23,19 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
   List<File> files = [];
   List<String> fileNames = [];
   List<String> downloadUrls = [];
+  List<Doc> allDocuments = [];
   int predictions = -1;
   List<String> fileContent = [];
   bool success = false;
+  int progress = 0;
+  int totalProgress = 0;
+  bool processFinish = false;
 
   void callPickFiles() async {
     final result = await ref.read(servicesProvider.notifier).pickFile(context);
     files = result!.paths.map((path) => File(path!)).toList();
     fileNames += result.names.map((name) => name!).toList();
+    totalProgress = files.length;
     for (int i = 0; i < files.length; i++) {
       if (!context.mounted) {
         return;
@@ -50,23 +55,27 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
           downloadUrls.add(singleFilePath);
           fileContent.add(content);
           predictions = predict(content);
-          print("$predictions PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
+          print(
+              "$predictions PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
           final docId = const Uuid().v1();
-          await ref.read(servicesProvider.notifier).uploadToFirebase(Doc(
-            fileName: fileNames[i],
-            assignmentTitle: "New Assignment",
-            assigmentDescription: "",
-            userId: ref.read(userProvider)!.uid,
-            docId: docId,
-            subjectJoiningCode: "",
-            type: "pdf",
-            fileUrl: singleFilePath,
-            prediction: Constants.subjectTypes[predictions],
-            createdAt: "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
-            tags: []
-          ),);
+          final document = Doc(
+              fileName: fileNames[i],
+              assignmentTitle: "New Assignment",
+              assigmentDescription: "",
+              userId: ref.read(userProvider)!.uid,
+              docId: docId,
+              subjectJoiningCode: "",
+              type: "pdf",
+              fileUrl: singleFilePath,
+              prediction: Constants.subjectTypes[predictions],
+              createdAt:
+                  "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
+              tags: []);
+          allDocuments.add(document);
+          await ref.read(servicesProvider.notifier).uploadToFirebase(document);
           setState(() {
             success = true;
+            progress = i + 1;
           });
         }).catchError((error) {
           ScaffoldMessenger.of(context)
@@ -74,6 +83,9 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
         });
       }
     }
+    setState(() {
+      processFinish = true;
+    });
   }
 
   int predict(String inputText) {
@@ -149,57 +161,115 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: ElevatedButton(
-                onPressed: () {
-                  callPickFiles();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade50,
-                ),
-                child: const Text(
-                  "Upload files",
-                  style: TextStyle(color: Colors.blue),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Container(
+                  decoration: BoxDecoration(color: Colors.grey.shade400),
+                  height: 1,
                 ),
               ),
-            ),
-            (fileNames.isEmpty)
-                ? const SizedBox()
-                : (isLoading)
-                    ? const CircularProgressIndicator()
-                    : ListView.builder(
-                        // scrollDirection: Axis.vertical,
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: fileNames.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Container(
-                              height: 50,
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Colors.black, width: 0.5),
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Text(fileNames[index]),
-                            ),
-                          );
-                        },
+              const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  onPressed: () {
+                    callPickFiles();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade50,
+                  ),
+                  child: const Text(
+                    "Upload files",
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                ),
+              ),
+              (fileNames.isEmpty)
+                  ? const SizedBox()
+                  : (isLoading)
+                      ? const CircularProgressIndicator()
+                      : ListView.builder(
+                          // scrollDirection: Axis.vertical,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: fileNames.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Container(
+                                height: 70,
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: Colors.black, width: 0.5),
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Column(
+                                  children: [
+                                    Text(fileNames[index]),
+                                    (processFinish)
+                                        ? Text(
+                                            "File Uploaded to ${allDocuments[index].prediction}")
+                                        : const Text("File is being uploaded"),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+              const SizedBox(height: 5),
+              success
+                  ? Center(
+                      child: Text(
+                        " $progress/$totalProgress Files Uploaded successfully!",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w500, fontSize: 18),
                       ),
-            success ? Text("Files Uploaded successfully") : SizedBox(),
-            ListView.builder(
-              // scrollDirection: Axis.vertical,
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: fileContent.length,
-              itemBuilder: (context, index) {
-                return Text(fileContent[index]);
-              },
-            ),
-          ],
+                    )
+                  : const SizedBox(),
+              // ListView.builder(
+              //   // scrollDirection: Axis.vertical,
+              //   physics: const NeverScrollableScrollPhysics(),
+              //   shrinkWrap: true,
+              //   itemCount: fileContent.length,
+              //   itemBuilder: (context, index) {
+              //     return Text(fileContent[index]);
+              //   },
+              // ),
+              const SizedBox(height: 20),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Uploading the files...",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    SizedBox(height: 15),
+                    Text("* Any file format can be uploaded (.pdf, .docx, .pptx, .xlsx, .jpg, .png)",
+                        style: TextStyle(fontSize: 16)),
+                    SizedBox(height: 10),
+                    Text(
+                        "* The uploading can take upto few seconds if the network connection is slow.",
+                        style: TextStyle(fontSize: 16)),
+                    SizedBox(height: 10),
+                    Text(
+                        "If you have trouble uploading the documents,",
+                        style:
+                            TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                            Text(
+                        "Contact us",
+                        style:
+                            TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.blue)),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

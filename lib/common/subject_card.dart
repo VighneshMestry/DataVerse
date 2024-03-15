@@ -21,19 +21,28 @@ class SubjectCard extends ConsumerWidget {
         height: 150,
         width: double.infinity,
         decoration: BoxDecoration(
-          image: DecorationImage(
-            image: subject.backGroundImageUrl.isNotEmpty ? ExactAssetImage(
-              subject.backGroundImageUrl,
-            ) : ExactAssetImage (Constants.subjectBackground[0]),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              Colors.white.withOpacity(0.3),
-              BlendMode.dstATop,
+            image: DecorationImage(
+              image: subject.backGroundImageUrl.isNotEmpty
+                  ? ExactAssetImage(
+                      subject.backGroundImageUrl,
+                    )
+                  : ExactAssetImage(Constants.subjectBackground[0]),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                Colors.white.withOpacity(0.3),
+                BlendMode.dstATop,
+              ),
             ),
-          ),
-          color: color,
-          borderRadius: BorderRadius.circular(10),
-        ),
+            color: color,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade400.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 1,
+                offset: Offset(0, 3), // changes position of shadow
+              ),
+            ]),
         child: Stack(
           children: [
             Padding(

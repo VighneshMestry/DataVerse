@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -146,10 +147,10 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const Icon(Icons.menu),
-        title: const Text("DataVerse"),
+        title: const Text("My Space"),
         actions: [
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.only(right: 0, top: 14),
             child: IconButton(
                 onPressed: () async {
                   // NotificationServices n = NotificationServices();
@@ -169,10 +170,25 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                   size: 28,
                 )),
           ),
-          const Padding(
-            padding: EdgeInsets.only(left: 12, top: 12, bottom: 12, right: 15),
-            child: Icon(Icons.published_with_changes_outlined, size: 28),
-          )
+          Padding(
+              padding: const EdgeInsets.only(
+                  left: 12, top: 12, bottom: 12, right: 15),
+              child: IconButton(
+                  onPressed: () async {
+                    // await LaunchApp.openApp(
+                    //   androidPackageName: 'com. whatsapp',
+                    //   // iosUrlScheme: 'pulsesecure://',
+                    //   // appStoreLink: 'itms-apps://itunes.apple.com/us/app/pulse-secure/id945832041',
+                    //   // openStore: false
+                    // );
+                    await DeviceApps.openApp('com.whatsapp');
+
+                    // Enter the package name of the App you want to open and for iOS add the URLscheme to the Info.plist file.
+                    // The `openStore` argument decides whether the app redirects to PlayStore or AppStore.
+                    // For testing purpose you can enter com.instagram.android
+                  },
+                  icon: const Icon(Icons.published_with_changes_outlined,
+                      size: 28)))
         ],
       ),
       body: SingleChildScrollView(
@@ -251,21 +267,11 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                       height: 200,
                       width: double.infinity,
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
+                        padding: const EdgeInsets.only(left: 12.0, right: 12.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            TextButton(
-                              onPressed: () {},
-                              style: TextButton.styleFrom(
-                                  minimumSize: const Size(double.infinity, 30)),
-                              child: const Text("Subject Upload",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.normal)),
-                            ),
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
@@ -279,6 +285,10 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                                       color: Colors.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.normal)),
+                            ),
+                            Container(
+                              height: 1,
+                              color: Colors.grey.shade300,
                             ),
                             TextButton(
                               onPressed: () async {

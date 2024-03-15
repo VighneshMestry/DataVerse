@@ -1,3 +1,4 @@
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/check_permissions.dart';
@@ -41,35 +42,49 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
     return Scaffold(
         appBar: AppBar(
           leading: const Icon(Icons.menu),
-          title: const Text("DataVerse"),
+          title: const Text("Classroom"),
           actions: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
+          Padding(
+            padding: const EdgeInsets.only(right: 0, top: 14),
+            child: IconButton(
+                onPressed: () async {
+                  // NotificationServices n = NotificationServices();
+                  // RemoteMessage message = RemoteMessage(
+                  //     notification: RemoteNotification(
+                  //         title: "Hello",
+                  //         body: "This is notificaiton",
+                  //         android: AndroidNotification(channelId: "0")));
+                  // await n.showNotification(message);
+                  // setState(() {});
+                  ref.read(authControllerProvider.notifier).logOut();
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const LoginScreen()));
+                },
+                icon: const Icon(
+                  Icons.search,
+                  size: 28,
+                )),
+          ),
+          Padding(
+              padding: const EdgeInsets.only(
+                  left: 12, top: 12, bottom: 12, right: 15),
               child: IconButton(
                   onPressed: () async {
-                    // NotificationServices n = NotificationServices();
-                    // RemoteMessage message = RemoteMessage(
-                    //     notification: RemoteNotification(
-                    //         title: "Hello",
-                    //         body: "This is notificaiton",
-                    //         android: AndroidNotification(channelId: "0")));
-                    // await n.showNotification(message);
-                    // setState(() {});
-                    ref.read(authControllerProvider.notifier).logOut();
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const LoginScreen()));
+                    // await LaunchApp.openApp(
+                    //   androidPackageName: 'com. whatsapp',
+                    //   // iosUrlScheme: 'pulsesecure://',
+                    //   // appStoreLink: 'itms-apps://itunes.apple.com/us/app/pulse-secure/id945832041',
+                    //   // openStore: false
+                    // );
+                    await DeviceApps.openApp('com.whatsapp');
+
+                    // Enter the package name of the App you want to open and for iOS add the URLscheme to the Info.plist file.
+                    // The `openStore` argument decides whether the app redirects to PlayStore or AppStore.
+                    // For testing purpose you can enter com.instagram.android
                   },
-                  icon: const Icon(
-                    Icons.search,
-                    size: 28,
-                  )),
-            ),
-            const Padding(
-              padding:
-                  EdgeInsets.only(left: 12, top: 12, bottom: 12, right: 15),
-              child: Icon(Icons.published_with_changes_outlined, size: 28),
-            )
-          ],
+                  icon: const Icon(Icons.published_with_changes_outlined,
+                      size: 28)))
+        ],
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -172,6 +187,7 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
                                       fontSize: 20,
                                       fontWeight: FontWeight.normal)),
                             ),
+                            Container(height: 1, color: Colors.grey.shade300),
                             TextButton(
                               onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(

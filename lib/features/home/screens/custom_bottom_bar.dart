@@ -345,7 +345,7 @@ class CustomBottomNavigationBarState
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_rounded),
-            label: 'Me',
+            label: 'My space',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
