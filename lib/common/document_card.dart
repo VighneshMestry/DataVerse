@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -95,6 +96,20 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
     var storePath = await getPathFile.getPath();
     final testFilePath = '$storePath/${widget.document.fileName}';
     await Share.shareFiles([testFilePath], text: "Sharing files");
+  }
+
+  void deleteDocument() async {
+    try {
+      // Get a reference to the document you want to delete
+      DocumentReference documentReference = (widget.document.subjectJoiningCode.length == 0) ? FirebaseFirestore.instance
+          .collection('myDocuments')
+          .doc(widget.document.docId) : FirebaseFirestore.instance
+          .collection('documents')
+          .doc(widget.document.docId);
+      await documentReference.delete();
+    } catch (e) {
+      print('Error deleting document: $e');
+    }
   }
 
   void updateNameDescriptionTags(WidgetRef ref, Doc doc) async {
@@ -363,7 +378,33 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                               ),
                             ),
                             PopupMenuItem(
-                              onTap: () {},
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('Delete Confirmation'),
+                                      content: const Text(
+                                          'Are you sure you want to delete this item?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            deleteDocument();
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text('Delete'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
                               value: 3,
                               child: const Row(
                                 children: [
