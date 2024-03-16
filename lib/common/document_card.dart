@@ -1,14 +1,20 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/constants/document_icons_icons.dart';
 import 'package:ml_project/directory_path.dart';
+import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:ml_project/features/auth/repository/services.dart';
 import 'package:ml_project/models/document_model.dart';
 import 'package:open_file/open_file.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:uuid/uuid.dart';
 
 class DocumentCard extends ConsumerStatefulWidget {
   final Doc document;
@@ -85,13 +91,114 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
     });
   }
 
+  void share() async {
+    var storePath = await getPathFile.getPath();
+    final testFilePath = '$storePath/${widget.document.fileName}';
+    await Share.shareFiles([testFilePath], text: "Sharing files");
+  }
+
   void updateNameDescriptionTags(WidgetRef ref, Doc doc) async {
     await ref.read(servicesProvider.notifier).updateNameDescriptionTags(doc);
   }
 
+  int predictions = -1;
+  void uploadToMySpace() async {
+    String singleFilePath = await ref
+        .read(servicesProvider.notifier)
+        .getPdfDownloadUrl(widget.document.fileName);
+    await ref
+        .read(servicesProvider.notifier)
+        .contactServer(context, singleFilePath)
+        .then((content) async {
+      predictions = predict(content);
+      print(
+          "$predictions PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
+      final docId = const Uuid().v1();
+      final document = Doc(
+          fileName: widget.document.fileName,
+          assignmentTitle: widget.document.assignmentTitle,
+          assigmentDescription: widget.document.assigmentDescription,
+          userId: ref.read(userProvider)!.uid,
+          docId: docId,
+          subjectJoiningCode: "",
+          type: "pdf",
+          fileUrl: singleFilePath,
+          prediction: Constants.subjectTypes[predictions],
+          createdAt:
+              "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
+          tags: widget.document.tags);
+      await ref.read(servicesProvider.notifier).uploadToFirebase(document);
+      setState(() {});
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("File Uploaded to ${document.prediction}")));
+    }).catchError((error) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error.toString())));
+    });
+  }
+
+  int predict(String inputText) {
+    if (_model == null ||
+        !_model.containsKey('vocabulary') ||
+        !_model.containsKey('class_prior') ||
+        !_model.containsKey('feature_count')) {
+      return -1; // Return an error code or handle the error appropriately
+    }
+
+    final vocabulary = _model['vocabulary'];
+    final classPrior = _model['class_prior'];
+    // final featureCount = _model['feature_count'];
+    // final classCount = _model['class_count'];
+
+    // Tokenize the input text using the same CountVectorizer vocabulary
+    final List<String> tokens = inputText.toLowerCase().split(RegExp(r'\W+'));
+
+    // Initialize variables to store probabilities for each class
+    final List<double> classProbabilities = List.filled(classPrior.length, 0.0);
+
+    // Calculate log probabilities for each class
+    for (int i = 0; i < classPrior.length; i++) {
+      double logProbability = _model['class_prior'][i];
+
+      for (String token in tokens) {
+        if (vocabulary.containsKey(token)) {
+          final tokenIndex = _model['vocabulary'][token];
+          logProbability += _model['feature_count'][i][tokenIndex];
+        }
+      }
+
+      classProbabilities[i] = logProbability;
+    }
+
+    // Select the class with the highest probability
+    int predictedClass = 0;
+    double maxProbability = classProbabilities[0];
+
+    for (int i = 1; i < classProbabilities.length; i++) {
+      if (classProbabilities[i] > maxProbability) {
+        maxProbability = classProbabilities[i];
+        predictedClass = i;
+      }
+    }
+    return predictedClass;
+  }
+
+  dynamic _model;
+
   @override
   void initState() {
     super.initState();
+    loadModel();
+  }
+
+  Future<void> loadModel() async {
+    // Load the serialized model from assets
+    final String modelData = await rootBundle
+        .loadString('assets/multinomial_naive_bayes_model.json');
+
+    // Parse the JSON data
+    final Map<String, dynamic> modelMap = json.decode(modelData);
+    _model = modelMap;
   }
 
   @override
@@ -121,92 +228,168 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // mainAxisSize: MainAxisSize.max,
               children: [
-                const CircleAvatar(
-                  radius: 24,
-                  backgroundColor: Colors.blue,
-                  child: Icon(
-                    Icons.assignment,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(width: 15),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          barrierDismissible: true,
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('Enter Details'),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  TextField(
-                                    controller: assignmentTitle,
-                                    decoration: const InputDecoration(
-                                        labelText: 'Assignment Name'),
-                                  ),
-                                  TextField(
-                                    controller: assignmentDescription,
-                                    decoration: const InputDecoration(
-                                        labelText: 'Assignent Description'),
-                                  ),
-                                ],
-                              ),
-                              actions: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    // Perform submission actions here
-                                    String assignmentTitleText =
-                                        (assignmentTitle.text.length == 0)
-                                            ? widget.document.assignmentTitle
-                                            : assignmentTitle.text.trim();
-                                    String assignmentDescriptionText =
-                                        (assignmentDescription.text.length == 0)
-                                            ? widget
-                                                .document.assigmentDescription
-                                            : assignmentDescription.text.trim();
-                                    Doc newDoc = widget.document.copyWith(
-                                        assignmentTitle: assignmentTitleText,
-                                        assigmentDescription:
-                                            assignmentDescriptionText);
-                                    updateNameDescriptionTags(ref, newDoc);
-
-                                    Navigator.of(context)
-                                        .pop(); // Close the dialog
-                                  },
-                                  child: const Text('Submit'),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .pop(); // Close the dialog
-                                  },
-                                  child: const Text('Cancel'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: Text(
-                        "New Assignment: ${widget.document.assignmentTitle}",
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500),
+                    const CircleAvatar(
+                      radius: 24,
+                      backgroundColor: Colors.blue,
+                      child: Icon(
+                        Icons.assignment,
+                        color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 5),
-                    Text(
-                      "Posted on ${widget.document.createdAt.substring(0, 10)} at ${widget.document.createdAt.substring(21, 26)}",
-                      style:
-                          TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                    const SizedBox(width: 15),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              barrierDismissible: true,
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('Enter Details'),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      TextField(
+                                        controller: assignmentTitle,
+                                        decoration: const InputDecoration(
+                                            labelText: 'Assignment Name'),
+                                      ),
+                                      TextField(
+                                        controller: assignmentDescription,
+                                        decoration: const InputDecoration(
+                                            labelText: 'Assignent Description'),
+                                      ),
+                                    ],
+                                  ),
+                                  actions: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        // Perform submission actions here
+                                        String assignmentTitleText =
+                                            (assignmentTitle.text.length == 0)
+                                                ? widget
+                                                    .document.assignmentTitle
+                                                : assignmentTitle.text.trim();
+                                        String assignmentDescriptionText =
+                                            (assignmentDescription
+                                                        .text.length ==
+                                                    0)
+                                                ? widget.document
+                                                    .assigmentDescription
+                                                : assignmentDescription.text
+                                                    .trim();
+                                        Doc newDoc = widget.document.copyWith(
+                                            assignmentTitle:
+                                                assignmentTitleText,
+                                            assigmentDescription:
+                                                assignmentDescriptionText);
+                                        updateNameDescriptionTags(ref, newDoc);
+
+                                        Navigator.of(context)
+                                            .pop(); // Close the dialog
+                                      },
+                                      child: const Text('Submit'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close the dialog
+                                      },
+                                      child: const Text('Cancel'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: Text(
+                            widget.document.assignmentTitle,
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          "Posted on ${widget.document.createdAt.substring(0, 10)} at ${widget.document.createdAt.substring(21, 26)}",
+                          style: TextStyle(
+                              fontSize: 14, color: Colors.grey.shade700),
+                        ),
+                      ],
                     ),
                   ],
-                )
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: GestureDetector(
+                    onTapDown: (TapDownDetails details) {
+                      Offset offset = details.globalPosition;
+                      showMenu(
+                          context: context,
+                          color: Colors.white,
+                          position: RelativeRect.fromLTRB(
+                              offset.dx, offset.dy + 20, 10, 0),
+                          items: [
+                            PopupMenuItem(
+                              onTap: () {
+                                uploadToMySpace();
+                              },
+                              value: 1,
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.upload),
+                                  SizedBox(width: 5),
+                                  Text("Upload to My Space"),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              onTap: () {
+                                share();
+                              },
+                              value: 2,
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.share),
+                                  SizedBox(width: 5),
+                                  Text("Share"),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              onTap: () {},
+                              value: 3,
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.delete),
+                                  SizedBox(width: 5),
+                                  Text("Delete"),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              onTap: () {},
+                              value: 4,
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.edit),
+                                  SizedBox(width: 5),
+                                  Text("Edit"),
+                                ],
+                              ),
+                            ),
+                          ]);
+                    },
+                    child: const Icon(Icons.more_vert_outlined),
+                  ),
+                ),
+                // Text("Hello"),
               ],
             ),
             const SizedBox(height: 15),
@@ -260,12 +443,14 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                               (widget.document.type == "pdf")
                                   ? Icon(Icons.note, color: Colors.red.shade700)
                                   : ((widget.document.type == "docx")
-                                      ? Icon(DocumentIcons.doc_text,
+                                      ? Icon(Icons.note,
                                           color: Colors.blue.shade700)
                                       : Icon(DocumentIcons.table,
                                           color: Colors.green.shade700)),
                               const SizedBox(width: 10),
-                              Text( (widget.document.fileName.length > 20) ? "${widget.document.fileName.substring(0, 20)}.jpg" : widget.document.fileName),
+                              Text((widget.document.fileName.length > 20)
+                                  ? "${widget.document.fileName.substring(0, 20)}.jpg"
+                                  : widget.document.fileName),
                             ],
                           ),
                         ),
@@ -334,7 +519,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                               (widget.document.type == "pdf")
                                   ? Icon(Icons.note, color: Colors.red.shade700)
                                   : ((widget.document.type == "docx")
-                                      ? Icon(DocumentIcons.doc_text,
+                                      ? Icon(Icons.note,
                                           color: Colors.blue.shade700)
                                       : Icon(DocumentIcons.table,
                                           color: Colors.green.shade700)),
