@@ -10,6 +10,7 @@ import 'package:ml_project/features/classroom/controller/classroom_controller.da
 import 'package:ml_project/features/classroom/screens/create_new_subject_screen.dart';
 import 'package:ml_project/features/classroom/screens/joining_classroom_screen.dart';
 import 'package:ml_project/features/classroom/screens/subject_docs_display.dart';
+import 'package:ml_project/features/home/screens/search_sreen.dart';
 
 class ClassroomScreen extends ConsumerStatefulWidget {
   const ClassroomScreen({super.key});
@@ -48,17 +49,8 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
             padding: const EdgeInsets.only(right: 0, top: 14),
             child: IconButton(
                 onPressed: () async {
-                  // NotificationServices n = NotificationServices();
-                  // RemoteMessage message = RemoteMessage(
-                  //     notification: RemoteNotification(
-                  //         title: "Hello",
-                  //         body: "This is notificaiton",
-                  //         android: AndroidNotification(channelId: "0")));
-                  // await n.showNotification(message);
-                  // setState(() {});
-                  ref.read(authControllerProvider.notifier).logOut();
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const LoginScreen()));
+                      builder: (context) => const SearchScreen()));
                 },
                 icon: const Icon(
                   Icons.search,

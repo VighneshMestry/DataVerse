@@ -108,7 +108,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
           .doc(widget.document.docId);
       await documentReference.delete();
     } catch (e) {
-      print('Error deleting document: $e');
+      rethrow;
     }
   }
 
@@ -162,8 +162,6 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
 
     final vocabulary = _model['vocabulary'];
     final classPrior = _model['class_prior'];
-    // final featureCount = _model['feature_count'];
-    // final classCount = _model['class_count'];
 
     // Tokenize the input text using the same CountVectorizer vocabulary
     final List<String> tokens = inputText.toLowerCase().split(RegExp(r'\W+'));
@@ -654,7 +652,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
