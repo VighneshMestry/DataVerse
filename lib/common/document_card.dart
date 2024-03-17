@@ -377,7 +377,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                             ),
                             PopupMenuItem(
                               onTap: () {
-                                showDialog(
+                                (ref.read(userProvider)!.uid != widget.document.userId) ? const SizedBox() : showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
@@ -404,7 +404,13 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                 );
                               },
                               value: 3,
-                              child: const Row(
+                              child: (ref.read(userProvider)!.uid != widget.document.userId) ? const Row(
+                                children: [
+                                  Icon(Icons.delete, color: Colors.grey),
+                                  SizedBox(width: 5),
+                                  Text("Delete", style: TextStyle(color: Colors.grey)),
+                                ],
+                              ) :  const Row(
                                 children: [
                                   Icon(Icons.delete),
                                   SizedBox(width: 5),
