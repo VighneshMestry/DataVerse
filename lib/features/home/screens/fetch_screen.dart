@@ -12,6 +12,7 @@ import 'package:ml_project/common/subject_card.dart';
 import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:ml_project/features/auth/repository/services.dart';
+import 'package:ml_project/features/home/drawers/profile_drawer.dart';
 import 'package:ml_project/features/home/screens/file_upload_screen.dart';
 import 'package:ml_project/features/home/screens/my_subject_docs_display.dart';
 import 'package:ml_project/models/document_model.dart';
@@ -146,7 +147,13 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: const Icon(Icons.menu),
+        leading: Builder(
+          builder: (context) {
+            return IconButton(icon: const Icon(Icons.menu), onPressed: (){
+              Scaffold.of(context).openDrawer();
+            },);
+          }
+        ),
         title: const Text("My Space"),
         actions: [
           Padding(
@@ -194,6 +201,7 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                       size: 28)))
         ],
       ),
+      drawer: const ProfileDrawer(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),

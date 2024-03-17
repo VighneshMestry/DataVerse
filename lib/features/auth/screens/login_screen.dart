@@ -41,7 +41,7 @@ void signIn(WidgetRef ref) {
   void signInWithGoogle() async {
     try {
       GoogleAuthProvider _googleAuthProvider = GoogleAuthProvider();
-      _auth.signInWithProvider(_googleAuthProvider);
+      await _auth.signInWithProvider(_googleAuthProvider);
     } catch (e) {
       throw e.toString();
     }

@@ -36,7 +36,7 @@ void signInWithGoogle(BuildContext context) async {
     state = false;
     _ref.read(userProvider.notifier).update((state) => user);
     
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => FetchScreen()));
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const FetchScreen()));
   }
 
   Stream<UserModel> getUserData(String uid) {
@@ -45,5 +45,6 @@ void signInWithGoogle(BuildContext context) async {
 
   void logOut() async {
     _authRepository.logOut();
+    _ref.read(userProvider.notifier).update((state) => null);
   }
 }
