@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/check_permissions.dart';
 import 'package:ml_project/common/subject_card.dart';
 import 'package:ml_project/constants/constants.dart';
-import 'package:ml_project/features/auth/controller/auth_controller.dart';
-import 'package:ml_project/features/auth/screens/login_screen.dart';
 import 'package:ml_project/features/classroom/controller/classroom_controller.dart';
 import 'package:ml_project/features/classroom/screens/create_new_subject_screen.dart';
 import 'package:ml_project/features/classroom/screens/joining_classroom_screen.dart';
