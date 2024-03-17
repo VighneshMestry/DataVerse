@@ -30,13 +30,15 @@ class AuthController extends StateNotifier<bool> {
 
   Stream<User?> get authStateChange => _authRepository.authStateChange;
 
-void signInWithGoogle(BuildContext context) async {
+  void signInWithGoogle(BuildContext context) async {
     state = true;
     final user = await _authRepository.signInWithGoogle();
     state = false;
     _ref.read(userProvider.notifier).update((state) => user);
-    
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const FetchScreen()));
+
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const FetchScreen()),
+        (Route<dynamic> route) => false);
   }
 
   Stream<UserModel> getUserData(String uid) {

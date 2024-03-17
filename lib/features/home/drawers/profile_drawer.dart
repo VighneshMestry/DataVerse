@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ml_project/features/auth/controller/auth_controller.dart';
+import 'package:ml_project/features/auth/screens/login_screen.dart';
 
 class ProfileDrawer extends ConsumerStatefulWidget {
   const ProfileDrawer({super.key});
@@ -50,8 +51,7 @@ class _ProfileDrawerState extends ConsumerState<ProfileDrawer> {
                     builder: (context) {
                       return AlertDialog(
                         title: const Text('LogOut'),
-                        content: const Text(
-                            'Are you sure you want to logout?'),
+                        content: const Text('Are you sure you want to logout?'),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () {
@@ -61,8 +61,11 @@ class _ProfileDrawerState extends ConsumerState<ProfileDrawer> {
                           ),
                           TextButton(
                             onPressed: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => const LoginScreen()),
+                                  (Route<dynamic> route) => false);
                               logOut();
-                              Navigator.of(context).pop();
                             },
                             child: const Text('LogOut'),
                           ),

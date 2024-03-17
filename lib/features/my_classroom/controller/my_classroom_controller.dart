@@ -11,7 +11,6 @@ final myClassroomControllerProvider =
 
  final getMySubjectDocumentsProvider =
       StreamProvider.family((ref, String type) {
-    print("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU");
     return ref
         .watch(myClassroomControllerProvider.notifier)
         .getMySubjectDocuments(type);
@@ -39,9 +38,7 @@ class MyClassroomController extends StateNotifier<bool> {
   MyClassroomController({required Ref ref, required MyClassroomServices myClassroomServices}) : _ref = ref, _myClassroomServices = myClassroomServices, super(false);
 
   Stream<List<Doc>> getMySubjectDocuments(String prediction) {
-    String userId = _ref.read(userProvider)!.uid;
-    print(userId);
-    return _myClassroomServices.getMySubjectDocuments(userId, prediction);
+    return _myClassroomServices.getMySubjectDocuments(_ref.read(userProvider)!.uid, prediction);
   }
 
   Stream<List<Doc>> getClassroomDocuments(String subjectJoiningCode) {

@@ -8,6 +8,7 @@ import 'package:ml_project/features/classroom/controller/classroom_controller.da
 import 'package:ml_project/features/classroom/screens/create_new_subject_screen.dart';
 import 'package:ml_project/features/classroom/screens/joining_classroom_screen.dart';
 import 'package:ml_project/features/classroom/screens/subject_docs_display.dart';
+import 'package:ml_project/features/home/drawers/profile_drawer.dart';
 import 'package:ml_project/features/home/screens/search_sreen.dart';
 
 class ClassroomScreen extends ConsumerStatefulWidget {
@@ -40,7 +41,14 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          leading: const Icon(Icons.menu),
+          leading: Builder(builder: (context) {
+          return IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          );
+        }),
           title: const Text("Classroom"),
           actions: [
           Padding(
@@ -76,6 +84,7 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
                       size: 28)))
         ],
         ),
+        drawer: const ProfileDrawer(),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),

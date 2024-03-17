@@ -1,14 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:ml_project/constants/constants.dart';
+import 'package:ml_project/directory_path.dart';
 import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:ml_project/features/auth/repository/services.dart';
 import 'package:ml_project/models/document_model.dart';
+import 'package:open_file/open_file.dart';
 import 'package:uuid/uuid.dart';
 
 class FileUploadScreen extends ConsumerStatefulWidget {
@@ -30,6 +33,63 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
   int progress = 0;
   int totalProgress = 0;
   bool processFinish = false;
+
+  bool downloading = false;
+  bool fileExists = false;
+  late String filePath;
+  late CancelToken cancelToken;
+  var getPathFile = DirectoryPath();
+
+  startDownload(Doc document) async {
+    cancelToken = CancelToken();
+    var storePath = await getPathFile.getPath();
+    filePath = '$storePath/${document.fileName}';
+    setState(() {
+      downloading = true;
+      progress = 0;
+    });
+
+    try {
+      print("downloading>...........................");
+      await Dio().download(document.fileUrl, filePath,
+          onReceiveProgress: (count, total) {}, cancelToken: cancelToken);
+      setState(() {
+        downloading = false;
+        fileExists = true;
+      });
+      if (fileExists == true) {
+        openfile();
+      }
+    } catch (e) {
+      setState(() {
+        downloading = false;
+      });
+    }
+  }
+
+  cancelDownload() {
+    cancelToken.cancel();
+    setState(() {
+      downloading = false;
+    });
+  }
+
+  openfile() {
+    OpenFile.open(filePath);
+    print("fff $filePath");
+  }
+
+  checkFileExist(Doc document) async {
+    var storePath = await getPathFile.getPath();
+    filePath = '$storePath/${document.fileName}';
+    print("filePath-- $filePath");
+    bool fileExistCheck = await File(filePath).exists();
+    setState(() {
+      fileExists = fileExistCheck;
+      print(
+          "last file check!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! $fileExists");
+    });
+  }
 
   void callPickFiles() async {
     final result = await ref.read(servicesProvider.notifier).pickFile(context);
@@ -178,6 +238,8 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
                 alignment: Alignment.center,
                 child: ElevatedButton(
                   onPressed: () {
+                    files = [];
+                    fileNames = [];
                     callPickFiles();
                   },
                   style: ElevatedButton.styleFrom(
@@ -192,7 +254,10 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
               (fileNames.isEmpty)
                   ? const SizedBox()
                   : (isLoading)
-                      ? const CircularProgressIndicator()
+                      ? const Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Center(child: CircularProgressIndicator()),
+                        )
                       : ListView.builder(
                           // scrollDirection: Axis.vertical,
                           physics: const NeverScrollableScrollPhysics(),
@@ -201,7 +266,7 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
                           itemBuilder: (context, index) {
                             return ListTile(
                               title: Container(
-                                height: 70,
+                                // height: 80,
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                     border: Border.all(
@@ -209,7 +274,56 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
                                     borderRadius: BorderRadius.circular(10)),
                                 child: Column(
                                   children: [
-                                    Text(fileNames[index]),
+                                    const SizedBox(height: 7),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        await checkFileExist(
+                                            allDocuments[index]);
+                                        fileExists
+                                            ? openfile()
+                                            : startDownload(
+                                                allDocuments[index]);
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.only(
+                                            left: 15,
+                                            right: 8,
+                                            top: 8,
+                                            bottom: 8),
+                                        height: 40,
+                                        width: 250,
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: Colors.grey.shade400),
+                                            borderRadius:
+                                                BorderRadius.circular(30)),
+                                        child: Row(
+                                          children: [
+                                            (allDocuments[index].type == "pdf")
+                                                ? Icon(Icons.note,
+                                                    color: Colors.red.shade700)
+                                                : ((allDocuments[index].type ==
+                                                        "docx")
+                                                    ? Icon(Icons.note,
+                                                        color: Colors
+                                                            .blue.shade700)
+                                                    : Icon(
+                                                        Icons
+                                                            .table_rows_outlined,
+                                                        color: Colors
+                                                            .green.shade700)),
+                                            const SizedBox(width: 10),
+                                            Text((allDocuments[index]
+                                                        .fileName
+                                                        .length >
+                                                    20)
+                                                ? "${allDocuments[index].fileName.substring(0, 20)}.jpg"
+                                                : allDocuments[index].fileName),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
                                     (processFinish)
                                         ? Text(
                                             "File Uploaded to ${allDocuments[index].prediction}")
@@ -247,24 +361,26 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
                   children: [
                     Text(
                       "Uploading the files...",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     SizedBox(height: 15),
-                    Text("* Any file format can be uploaded (.pdf, .docx, .pptx, .xlsx, .jpg, .png)",
+                    Text(
+                        "* Any file format can be uploaded (.pdf, .docx, .pptx, .xlsx, .jpg, .png)",
                         style: TextStyle(fontSize: 16)),
                     SizedBox(height: 10),
                     Text(
                         "* The uploading can take upto few seconds if the network connection is slow.",
                         style: TextStyle(fontSize: 16)),
                     SizedBox(height: 10),
-                    Text(
-                        "If you have trouble uploading the documents,",
-                        style:
-                            TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                            Text(
-                        "Contact us",
-                        style:
-                            TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.blue)),
+                    Text("If you have trouble uploading the documents,",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w500)),
+                    Text("Contact us",
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.blue)),
                   ],
                 ),
               )

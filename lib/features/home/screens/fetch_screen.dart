@@ -147,13 +147,14 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Builder(
-          builder: (context) {
-            return IconButton(icon: const Icon(Icons.menu), onPressed: (){
+        leading: Builder(builder: (context) {
+          return IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
               Scaffold.of(context).openDrawer();
-            },);
-          }
-        ),
+            },
+          );
+        }),
         title: const Text("My Space"),
         actions: [
           Padding(
@@ -173,7 +174,8 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                   // Navigator.of(context).push(MaterialPageRoute(
                   //     builder: (context) => const LoginScreen()));
 
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchScreen()));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => SearchScreen()));
                 },
                 icon: const Icon(
                   Icons.search,
@@ -220,6 +222,7 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
+                      setState(() {});
                       Navigator.push(
                         context,
                         MaterialPageRoute(

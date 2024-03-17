@@ -73,7 +73,6 @@ class AuthRepository {
   }
 
   Stream<UserModel> getUserData(String uid) {
-    print("55555555555555555555555555555555555555555555555555555555555555555555555");
     return _users.doc(uid).snapshots().map(
         (event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
   }
