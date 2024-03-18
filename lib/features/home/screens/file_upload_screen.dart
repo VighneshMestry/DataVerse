@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -121,7 +122,7 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
           final document = Doc(
               fileName: fileNames[i],
               assignmentTitle: "New Assignment",
-              assigmentDescription: "",
+              assigmentDescription: "Assignment Description",
               userId: ref.read(userProvider)!.uid,
               docId: docId,
               subjectJoiningCode: "",
@@ -222,7 +223,7 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -236,18 +237,41 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
               const SizedBox(height: 20),
               Align(
                 alignment: Alignment.center,
-                child: ElevatedButton(
-                  onPressed: () {
+                child: GestureDetector(
+                  onTap: () {
                     files = [];
                     fileNames = [];
                     callPickFiles();
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade50,
-                  ),
-                  child: const Text(
-                    "Upload files",
-                    style: TextStyle(color: Colors.blue),
+                  child: DottedBorder(
+                    borderType: BorderType.RRect,
+                    radius: const Radius.circular(10),
+                    dashPattern: const [10, 4],
+                    strokeCap: StrokeCap.round,
+                    child: Container(
+                      width: double.infinity,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.folder_open_outlined,
+                            size: 40,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Select Files',
+                            style: TextStyle(
+                                fontSize: 15, color: Colors.grey.shade400),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),

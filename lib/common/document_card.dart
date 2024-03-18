@@ -101,11 +101,14 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
   void deleteDocument() async {
     try {
       // Get a reference to the document you want to delete
-      DocumentReference documentReference = (widget.document.subjectJoiningCode.length == 0) ? FirebaseFirestore.instance
-          .collection('myDocuments')
-          .doc(widget.document.docId) : FirebaseFirestore.instance
-          .collection('documents')
-          .doc(widget.document.docId);
+      DocumentReference documentReference =
+          (widget.document.subjectJoiningCode.length == 0)
+              ? FirebaseFirestore.instance
+                  .collection('myDocuments')
+                  .doc(widget.document.docId)
+              : FirebaseFirestore.instance
+                  .collection('documents')
+                  .doc(widget.document.docId);
       await documentReference.delete();
     } catch (e) {
       rethrow;
@@ -114,6 +117,10 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
 
   void updateNameDescriptionTags(WidgetRef ref, Doc doc) async {
     await ref.read(servicesProvider.notifier).updateNameDescriptionTags(doc);
+  }
+
+  void askAI() {
+    
   }
 
   int predictions = -1;
@@ -220,7 +227,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
     TextEditingController assignmentDescription = TextEditingController();
     TextEditingController tags = TextEditingController();
     return Container(
-      height: 240,
+      height: 290,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: Colors.grey.shade300),
@@ -377,46 +384,55 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                             ),
                             PopupMenuItem(
                               onTap: () {
-                                (ref.read(userProvider)!.uid != widget.document.userId) ? const SizedBox() : showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text('Delete Confirmation'),
-                                      content: const Text(
-                                          'Are you sure you want to delete this item?'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            deleteDocument();
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text('Delete'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
+                                (ref.read(userProvider)!.uid !=
+                                        widget.document.userId)
+                                    ? const SizedBox()
+                                    : showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text(
+                                                'Delete Confirmation'),
+                                            content: const Text(
+                                                'Are you sure you want to delete this item?'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const Text('Cancel'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  deleteDocument();
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const Text('Delete'),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
                               },
                               value: 3,
-                              child: (ref.read(userProvider)!.uid != widget.document.userId) ? const Row(
-                                children: [
-                                  Icon(Icons.delete, color: Colors.grey),
-                                  SizedBox(width: 5),
-                                  Text("Delete", style: TextStyle(color: Colors.grey)),
-                                ],
-                              ) :  const Row(
-                                children: [
-                                  Icon(Icons.delete),
-                                  SizedBox(width: 5),
-                                  Text("Delete"),
-                                ],
-                              ),
+                              child: (ref.read(userProvider)!.uid !=
+                                      widget.document.userId)
+                                  ? const Row(
+                                      children: [
+                                        Icon(Icons.delete, color: Colors.grey),
+                                        SizedBox(width: 5),
+                                        Text("Delete",
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                      ],
+                                    )
+                                  : const Row(
+                                      children: [
+                                        Icon(Icons.delete),
+                                        SizedBox(width: 5),
+                                        Text("Delete"),
+                                      ],
+                                    ),
                             ),
                             PopupMenuItem(
                               onTap: () {},
@@ -441,64 +457,98 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
             widget.document.assigmentDescription.isEmpty
                 ? Column(
                     children: [
-                      GestureDetector(
-                        onTap: () async {
-                          await checkFileExist();
-                          fileExists ? openfile() : startDownload();
-                          if (downloading) {
-                            // ignore: use_build_context_synchronously
-                            showDialog(
-                                barrierDismissible: true,
-                                context: context,
-                                builder: (context) {
-                                  print(
-                                      "Downloading dialog______________________________________________________");
-                                  return AlertDialog(
-                                    content: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        CircularProgressIndicator(
-                                          value: progress,
-                                          strokeWidth: 3,
-                                          backgroundColor: Colors.grey,
-                                          valueColor:
-                                              const AlwaysStoppedAnimation<
-                                                  Color>(Colors.blue),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              await checkFileExist();
+                              fileExists ? openfile() : startDownload();
+                              if (downloading) {
+                                // ignore: use_build_context_synchronously
+                                showDialog(
+                                    barrierDismissible: true,
+                                    context: context,
+                                    builder: (context) {
+                                      print(
+                                          "Downloading dialog______________________________________________________");
+                                      return AlertDialog(
+                                        content: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            CircularProgressIndicator(
+                                              value: progress,
+                                              strokeWidth: 3,
+                                              backgroundColor: Colors.grey,
+                                              valueColor:
+                                                  const AlwaysStoppedAnimation<
+                                                      Color>(Colors.blue),
+                                            ),
+                                            Text(
+                                              (progress * 100)
+                                                  .toStringAsFixed(2),
+                                              style:
+                                                  const TextStyle(fontSize: 12),
+                                            )
+                                          ],
                                         ),
-                                        Text(
-                                          (progress * 100).toStringAsFixed(2),
-                                          style: const TextStyle(fontSize: 12),
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                });
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.only(
-                              left: 15, right: 8, top: 8, bottom: 8),
-                          height: 40,
-                          width: 250,
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey.shade400),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Row(
-                            children: [
-                              (widget.document.type == "pdf")
-                                  ? Icon(Icons.note, color: Colors.red.shade700)
-                                  : ((widget.document.type == "docx")
+                                      );
+                                    });
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.only(
+                                  left: 15, right: 8, top: 8, bottom: 8),
+                              height: 40,
+                              width: 250,
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: Colors.grey.shade400),
+                                  borderRadius: BorderRadius.circular(30)),
+                              child: Row(
+                                children: [
+                                  (widget.document.type == "pdf")
                                       ? Icon(Icons.note,
-                                          color: Colors.blue.shade700)
-                                      : Icon(DocumentIcons.table,
-                                          color: Colors.green.shade700)),
-                              const SizedBox(width: 10),
-                              Text((widget.document.fileName.length > 20)
-                                  ? "${widget.document.fileName.substring(0, 20)}.jpg"
-                                  : widget.document.fileName),
-                            ],
+                                          color: Colors.red.shade700)
+                                      : ((widget.document.type == "docx")
+                                          ? Icon(Icons.note,
+                                              color: Colors.blue.shade700)
+                                          : Icon(DocumentIcons.table,
+                                              color: Colors.green.shade700)),
+                                  const SizedBox(width: 10),
+                                  Text((widget.document.fileName.length > 20)
+                                      ? "${widget.document.fileName.substring(0, 20)}.jpg"
+                                      : widget.document.fileName),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 5),
+                          Container(
+                            padding: const EdgeInsets.all(5.0),
+                            height: 40,
+                            width: 95,
+                            child: FloatingActionButton(
+                              elevation: 3,
+                              highlightElevation: 0,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30)),
+                              backgroundColor: Colors.white,
+                              onPressed: () {
+                                // generateConclusion();
+                                // (conclusion.length == 0) ? SizedBox() :
+                                // setState(() {});
+                                // _showConclusionDialog(context);
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(30),
+                                child: const Text(
+                                  "Ask AI!",
+                                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                       const SizedBox(
                         height: 45,
@@ -517,66 +567,96 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                           maxLines: 1,
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () async {
-                          await checkFileExist();
-                          fileExists ? openfile() : startDownload();
-                          if (downloading) {
-                            // ignore: use_build_context_synchronously
-                            showDialog(
-                                barrierDismissible: true,
-                                context: context,
-                                builder: (context) {
-                                  print(
-                                      "Downloading dialog______________________________________________________");
-                                  return AlertDialog(
-                                    content: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        CircularProgressIndicator(
-                                          value: progress,
-                                          strokeWidth: 3,
-                                          backgroundColor: Colors.grey,
-                                          valueColor:
-                                              const AlwaysStoppedAnimation<
-                                                  Color>(Colors.blue),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              await checkFileExist();
+                              fileExists ? openfile() : startDownload();
+                              if (downloading) {
+                                // ignore: use_build_context_synchronously
+                                showDialog(
+                                    barrierDismissible: true,
+                                    context: context,
+                                    builder: (context) {
+                                      print(
+                                          "Downloading dialog______________________________________________________");
+                                      return AlertDialog(
+                                        content: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            CircularProgressIndicator(
+                                              value: progress,
+                                              strokeWidth: 3,
+                                              backgroundColor: Colors.grey,
+                                              valueColor:
+                                                  const AlwaysStoppedAnimation<
+                                                      Color>(Colors.blue),
+                                            ),
+                                            Text(
+                                              (progress * 100).toStringAsFixed(2),
+                                              style: const TextStyle(fontSize: 12),
+                                            )
+                                          ],
                                         ),
-                                        Text(
-                                          (progress * 100).toStringAsFixed(2),
-                                          style: const TextStyle(fontSize: 12),
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                });
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.only(
-                              left: 15, right: 8, top: 8, bottom: 8),
-                          height: 40,
-                          width: 250,
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey.shade400),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Row(
-                            children: [
-                              (widget.document.type == "pdf")
-                                  ? Icon(Icons.note, color: Colors.red.shade700)
-                                  : ((widget.document.type == "docx")
-                                      ? Icon(Icons.note,
-                                          color: Colors.blue.shade700)
-                                      : Icon(DocumentIcons.table,
-                                          color: Colors.green.shade700)),
-                              const SizedBox(width: 10),
-                              Text(widget.document.fileName),
-                            ],
+                                      );
+                                    });
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.only(
+                                  left: 15, right: 8, top: 8, bottom: 8),
+                              height: 40,
+                              width: 250,
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey.shade400),
+                                  borderRadius: BorderRadius.circular(30)),
+                              child: Row(
+                                children: [
+                                  (widget.document.type == "pdf")
+                                      ? Icon(Icons.note, color: Colors.red.shade700)
+                                      : ((widget.document.type == "docx")
+                                          ? Icon(Icons.note,
+                                              color: Colors.blue.shade700)
+                                          : Icon(DocumentIcons.table,
+                                              color: Colors.green.shade700)),
+                                  const SizedBox(width: 10),
+                                  Text(widget.document.fileName),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 5),
+                          Container(
+                            padding: const EdgeInsets.all(5.0),
+                            height: 40,
+                            width: 95,
+                            child: FloatingActionButton(
+                              elevation: 3,
+                              highlightElevation: 0,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30)),
+                              backgroundColor: Colors.white,
+                              onPressed: () {
+                                // generateConclusion();
+                                // (conclusion.length == 0) ? SizedBox() :
+                                // setState(() {});
+                                // _showConclusionDialog(context);
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(30),
+                                child: const Text(
+                                  "Ask AI!",
+                                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ],
                   ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 65),
             Container(
               height: 1,
               color: Colors.grey.shade300,

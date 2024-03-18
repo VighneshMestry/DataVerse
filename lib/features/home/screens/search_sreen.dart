@@ -169,7 +169,7 @@ class _FileAndAssignmentNameSearchState
                 builder: (context, snapshots) {
                   return (snapshots.connectionState == ConnectionState.waiting)
                       ? const Center(
-                          child: CircularProgressIndicator(),
+                          child: SizedBox(),
                         )
                       : ListView.builder(
                           shrinkWrap: true,
@@ -301,7 +301,7 @@ class _TagsSearchState extends State<TagsSearch> {
                 builder: (context, snapshots) {
                   return (snapshots.connectionState == ConnectionState.waiting)
                       ? const Center(
-                          child: CircularProgressIndicator(),
+                          child: SizedBox(),
                         )
                       : ListView.builder(
                           shrinkWrap: true,

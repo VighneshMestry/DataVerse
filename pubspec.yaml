@@ -56,6 +56,7 @@ dependencies:
   external_app_launcher: ^4.0.0
   device_apps: ^2.2.0
   share_plus: ^7.2.2 # To share file documents
+  dotted_border: ^2.0.0+3
 
 dev_dependencies:
   flutter_test:
