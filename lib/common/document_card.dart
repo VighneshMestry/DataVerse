@@ -621,7 +621,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                           : Icon(DocumentIcons.table,
                                               color: Colors.green.shade700)),
                                   const SizedBox(width: 10),
-                                  Text(widget.document.fileName),
+                                  Text(widget.document.fileName, overflow: TextOverflow.ellipsis),
                                 ],
                               ),
                             ),
