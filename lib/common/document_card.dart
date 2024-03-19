@@ -119,8 +119,30 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
     await ref.read(servicesProvider.notifier).updateNameDescriptionTags(doc);
   }
 
-  void askAI() {
-    
+  void askAI() async {
+    await ref
+        .read(servicesProvider.notifier)
+        .contactServer(context, widget.document.fileUrl)
+        .then((content) async {
+
+          
+      // final docId = const Uuid().v1();
+      // final document = Doc(
+      //     fileName: fileNames[i],
+      //     assignmentTitle: "New Assignment",
+      //     assigmentDescription: "Assignment Description",
+      //     userId: ref.read(userProvider)!.uid,
+      //     docId: docId,
+      //     subjectJoiningCode: "",
+      //     type: "pdf",
+      //     fileUrl: singleFilePath,
+      //     prediction: Constants.subjectTypes[predictions],
+      //     createdAt:
+      //         "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
+      //     tags: []);
+      // await ref.read(servicesProvider.notifier).uploadToFirebase(document);
+      setState(() {});
+    });
   }
 
   int predictions = -1;
@@ -543,7 +565,9 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                 borderRadius: BorderRadius.circular(30),
                                 child: const Text(
                                   "Ask AI!",
-                                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
                                 ),
                               ),
                             ),
@@ -594,8 +618,10 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                                       Color>(Colors.blue),
                                             ),
                                             Text(
-                                              (progress * 100).toStringAsFixed(2),
-                                              style: const TextStyle(fontSize: 12),
+                                              (progress * 100)
+                                                  .toStringAsFixed(2),
+                                              style:
+                                                  const TextStyle(fontSize: 12),
                                             )
                                           ],
                                         ),
@@ -609,19 +635,22 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                               height: 40,
                               width: 250,
                               decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey.shade400),
+                                  border:
+                                      Border.all(color: Colors.grey.shade400),
                                   borderRadius: BorderRadius.circular(30)),
                               child: Row(
                                 children: [
                                   (widget.document.type == "pdf")
-                                      ? Icon(Icons.note, color: Colors.red.shade700)
+                                      ? Icon(Icons.note,
+                                          color: Colors.red.shade700)
                                       : ((widget.document.type == "docx")
                                           ? Icon(Icons.note,
                                               color: Colors.blue.shade700)
                                           : Icon(DocumentIcons.table,
                                               color: Colors.green.shade700)),
                                   const SizedBox(width: 10),
-                                  Text(widget.document.fileName, overflow: TextOverflow.ellipsis),
+                                  Text(widget.document.fileName,
+                                      overflow: TextOverflow.ellipsis),
                                 ],
                               ),
                             ),
@@ -647,7 +676,9 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                 borderRadius: BorderRadius.circular(30),
                                 child: const Text(
                                   "Ask AI!",
-                                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
                                 ),
                               ),
                             ),
