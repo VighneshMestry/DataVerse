@@ -379,7 +379,7 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
                                     (processFinish)
                                         ? Text(
                                             index < allDocuments.length ? "File Uploaded to ${allDocuments[index].prediction}" : "File Uploaded to __") 
-                                        : const Text("File is being uploaded"),
+                                        : const Text("File is being uploaded..."),
                                   ],
                                 ),
                               ),

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:ml_project/models/ai_document_model.dart';
 import 'package:ml_project/models/document_model.dart';
 
 final servicesProvider = StateNotifierProvider<Services, bool>((ref) {
@@ -31,6 +32,10 @@ class Services extends StateNotifier<bool> {
 
   Future uploadToFirebase(Doc doc) async {
     return await _myDocs.doc(doc.docId).set(doc.toMap());
+  }
+
+  Future uploadAIDocToFirebase(AIDoc doc) async {
+    return await _firestore.collection("AIDocuments").doc(doc.aiDocId).set(doc.toMap());
   }
 
   Future<void> uploadPDF(

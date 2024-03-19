@@ -11,6 +11,8 @@ import 'package:ml_project/constants/constants.dart';
 import 'package:ml_project/directory_path.dart';
 import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:ml_project/features/auth/repository/services.dart';
+import 'package:ml_project/features/my_classroom/repository/my_classroom_services.dart';
+import 'package:ml_project/models/ai_document_model.dart';
 import 'package:ml_project/models/document_model.dart';
 import 'package:open_file/open_file.dart';
 import 'package:share_plus/share_plus.dart';
@@ -30,10 +32,12 @@ class DocumentCard extends ConsumerStatefulWidget {
 class _DocumentCardState extends ConsumerState<DocumentCard> {
   bool downloading = false;
   bool fileExists = false;
+  bool aiFileExists = false;
   double progress = 0;
   late String filePath;
   late CancelToken cancelToken;
   var getPathFile = DirectoryPath();
+  late AIDoc aiDocument;
 
   startDownload() async {
     cancelToken = CancelToken();
@@ -67,13 +71,6 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
     }
   }
 
-  cancelDownload() {
-    cancelToken.cancel();
-    setState(() {
-      downloading = false;
-    });
-  }
-
   openfile() {
     OpenFile.open(filePath);
     print("fff $filePath");
@@ -88,6 +85,55 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
       fileExists = fileExistCheck;
       print(
           "last file check!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! $fileExists");
+    });
+  }
+
+  aiStartDownload() async {
+    cancelToken = CancelToken();
+    var storePath = await getPathFile.getPath();
+    filePath = '$storePath/AI ${widget.document.fileName}';
+    setState(() {
+      downloading = true;
+      progress = 0;
+    });
+
+    try {
+      print("downloading>...........................");
+      await Dio().download(aiDocument.fileUrl, filePath,
+          onReceiveProgress: (count, total) {
+        setState(() {
+          progress = (count / total);
+        });
+      }, cancelToken: cancelToken);
+      setState(() {
+        downloading = false;
+        fileExists = true;
+      });
+      if (fileExists == true) {
+        openfile();
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        downloading = false;
+      });
+    }
+  }
+
+  aiOpenfile() {
+    OpenFile.open(filePath);
+    print("fff $filePath");
+  }
+
+  aiCheckFileExist() async {
+    var storePath = await getPathFile.getPath();
+    filePath = '$storePath/AI ${widget.document.fileName}';
+    print("filePath-- $filePath");
+    bool fileExistCheck = await File(filePath).exists();
+    setState(() {
+      aiFileExists = fileExistCheck;
+      print(
+          "last file check!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! $aiFileExists");
     });
   }
 
@@ -123,23 +169,39 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
         .read(servicesProvider.notifier)
         .contactServer(context, widget.document.fileUrl)
         .then((content) async {
-      // final docId = const Uuid().v1();
-      // final document = Doc(
-      //     fileName: fileNames[i],
-      //     assignmentTitle: "New Assignment",
-      //     assigmentDescription: "Assignment Description",
-      //     userId: ref.read(userProvider)!.uid,
-      //     docId: docId,
-      //     subjectJoiningCode: "",
-      //     type: "pdf",
-      //     fileUrl: singleFilePath,
-      //     prediction: Constants.subjectTypes[predictions],
-      //     createdAt:
-      //         "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
-      //     tags: []);
-      // await ref.read(servicesProvider.notifier).uploadToFirebase(document);
-      setState(() {});
+      var storePath = await getPathFile.getPath();
+      filePath = '$storePath/AI/${widget.document.fileName}';
+      File file = File(filePath);
+      await file.writeAsString(content);
+      await ref
+          .read(servicesProvider.notifier)
+          .uploadPDF(context, file, "AI ${widget.document.fileName}");
+
+      String aiFileUrl = await ref
+          .read(servicesProvider.notifier)
+          .getPdfDownloadUrl("AI ${widget.document.fileName}");
+
+      final AiDocId = const Uuid().v1();
+      final document = AIDoc(
+        fileName: "AI ${widget.document.fileName}",
+        aiDocId: AiDocId,
+        mainDocId: widget.document.docId,
+        userId: widget.document.userId,
+        fileUrl: aiFileUrl,
+        createdAt:
+            "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
+      );
+      await ref.read(servicesProvider.notifier).uploadAIDocToFirebase(document);
+      setState(() {
+        aiFileExists = true;
+      });
     });
+  }
+
+  getAiDocument(String mainDocId) async {
+    aiDocument =
+        await ref.read(myClassroomServicesProvider).getAiDocument(mainDocId);
+    setState(() {});
   }
 
   int predictions = -1;
@@ -692,10 +754,8 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                 elevation: 3,
                               ),
                               onPressed: () {
-                                // generateConclusion();
-                                // (conclusion.length == 0) ? SizedBox() :
-                                // setState(() {});
-                                // _showConclusionDialog(context);
+                                getAiDocument(widget.document.docId);
+                                askAI();
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(30),
@@ -710,9 +770,65 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                           )
                         ],
                       ),
+                      const SizedBox(height: 10),
+                      aiFileExists
+                          ? Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () async {
+                                    await aiCheckFileExist();
+                                    aiFileExists
+                                        ? aiOpenfile()
+                                        : aiStartDownload();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.only(
+                                        left: 15, right: 8, top: 8, bottom: 8),
+                                    height: 40,
+                                    width: 250,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.grey.shade400),
+                                        borderRadius:
+                                            BorderRadius.circular(30)),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.note,
+                                            color: Colors.red.shade700),
+                                        const SizedBox(width: 10),
+                                        Text(widget.document.fileName,
+                                            overflow: TextOverflow.ellipsis),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                Container(
+                                  padding: const EdgeInsets.all(4.0),
+                                  height: 40,
+                                  width: 99,
+                                  child: ElevatedButton(
+                                    autofocus: true,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30)),
+                                      elevation: 3,
+                                    ),
+                                    onPressed: () {},
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(30),
+                                      child: Icon(Icons.mic_none_rounded),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                          : const SizedBox(height: 40),
                     ],
                   ),
-            const SizedBox(height: 65),
+            const SizedBox(height: 15),
             Container(
               height: 1,
               color: Colors.grey.shade300,

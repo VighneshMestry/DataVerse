@@ -44,19 +44,33 @@ class _MySubjectDocsDisplayScreenState
                             height: 1,
                           ),
                           const SizedBox(height: 20),
-                          ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: data.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 20.0),
-                                child: DocumentCard(
-                                  document: data[index],
+                          (data.isEmpty)
+                              ? Center(
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(height: 210),
+                                      Image.asset("assets/nothingToSeeHere.png",
+                                          height: 200),
+                                      const Text("Nothing to see here!",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                    ],
+                                  ),
+                                )
+                              : ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: data.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 20.0),
+                                      child: DocumentCard(
+                                        document: data[index],
+                                      ),
+                                    );
+                                  },
                                 ),
-                              );
-                            },
-                          ),
                         ],
                       ),
                     ),
