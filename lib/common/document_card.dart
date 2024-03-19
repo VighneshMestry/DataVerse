@@ -125,7 +125,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
         .contactServer(context, widget.document.fileUrl)
         .then((content) async {
 
-          
+
       // final docId = const Uuid().v1();
       // final document = Doc(
       //     fileName: fileNames[i],
@@ -528,17 +528,29 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                   borderRadius: BorderRadius.circular(30)),
                               child: Row(
                                 children: [
-                                  (widget.document.type == "pdf")
-                                      ? Icon(Icons.note,
-                                          color: Colors.red.shade700)
-                                      : ((widget.document.type == "docx")
-                                          ? Icon(Icons.note,
-                                              color: Colors.blue.shade700)
-                                          : Icon(DocumentIcons.table,
-                                              color: Colors.green.shade700)),
+                                  // (widget.document.type == "pdf")
+                                  //     ? Icon(Icons.note,
+                                  //         color: Colors.red.shade700)
+                                  //     : ((widget.document.type == "docx")
+                                  //         ? Icon(Icons.note,
+                                  //             color: Colors.blue.shade700)
+                                  //         : Icon(Icons.note,
+                                  //             color: Colors.orange.shade700)),
+                                  if(widget.document.type == "pdf?") 
+                                    Icon(Icons.note,
+                                            color: Colors.red.shade700),
+                                  if(widget.document.type == "docx") 
+                                    Icon(Icons.note,
+                                            color: Colors.blue.shade700),
+                                  if(widget.document.type == "xlsx") 
+                                    Icon(Icons.note,
+                                            color: Colors.green.shade700),
+                                  if(widget.document.type == "pptx") 
+                                    Icon(Icons.note,
+                                            color: Colors.orange.shade700),
                                   const SizedBox(width: 10),
-                                  Text((widget.document.fileName.length > 20)
-                                      ? "${widget.document.fileName.substring(0, 20)}.jpg"
+                                  Text((widget.document.fileName.length > 23)
+                                      ? widget.document.fileName.substring(0, 23)
                                       : widget.document.fileName),
                                 ],
                               ),
@@ -640,14 +652,26 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                   borderRadius: BorderRadius.circular(30)),
                               child: Row(
                                 children: [
-                                  (widget.document.type == "pdf")
-                                      ? Icon(Icons.note,
-                                          color: Colors.red.shade700)
-                                      : ((widget.document.type == "docx")
-                                          ? Icon(Icons.note,
-                                              color: Colors.blue.shade700)
-                                          : Icon(DocumentIcons.table,
-                                              color: Colors.green.shade700)),
+                                  // (widget.document.type == "pdf")
+                                  //     ? Icon(Icons.note,
+                                  //         color: Colors.red.shade700)
+                                  //     : ((widget.document.type == "docx")
+                                  //         ? Icon(Icons.note,
+                                  //             color: Colors.blue.shade700)
+                                  //         : Icon(Icons.note,
+                                  //             color: Colors.orange.shade700)),
+                                  if(widget.document.type == "pdf?") 
+                                    Icon(Icons.note,
+                                            color: Colors.red.shade700),
+                                  if(widget.document.type == "docx") 
+                                    Icon(Icons.note,
+                                            color: Colors.blue.shade700),
+                                  if(widget.document.type == "xlsx") 
+                                    Icon(Icons.note,
+                                            color: Colors.green.shade700),
+                                  if(widget.document.type == "pptx") 
+                                    Icon(Icons.note,
+                                            color: Colors.orange.shade700),
                                   const SizedBox(width: 10),
                                   Text(widget.document.fileName,
                                       overflow: TextOverflow.ellipsis),

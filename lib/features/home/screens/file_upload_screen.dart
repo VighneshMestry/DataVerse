@@ -14,6 +14,7 @@ import 'package:ml_project/features/auth/repository/services.dart';
 import 'package:ml_project/models/document_model.dart';
 import 'package:open_file/open_file.dart';
 import 'package:uuid/uuid.dart';
+import 'package:path/path.dart' as path;
 
 class FileUploadScreen extends ConsumerStatefulWidget {
   const FileUploadScreen({super.key});
@@ -126,13 +127,18 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
               userId: ref.read(userProvider)!.uid,
               docId: docId,
               subjectJoiningCode: "",
-              type: "pdf",
+              type: path
+                  .extension(singleFilePath)
+                  .replaceAll('.', '')
+                  .substring(0, 4),
               fileUrl: singleFilePath,
               prediction: Constants.subjectTypes[predictions],
               createdAt:
                   "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
               tags: []);
           allDocuments.add(document);
+          print(document.type);
+          print("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}");
           await ref.read(servicesProvider.notifier).uploadToFirebase(document);
           setState(() {
             success = true;
@@ -241,6 +247,7 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
                   onTap: () {
                     files = [];
                     fileNames = [];
+                    allDocuments = [];
                     callPickFiles();
                   },
                   child: DottedBorder(
@@ -323,26 +330,47 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
                                                 BorderRadius.circular(30)),
                                         child: Row(
                                           children: [
-                                            (allDocuments[index].type == "pdf")
-                                                ? Icon(Icons.note,
-                                                    color: Colors.red.shade700)
-                                                : ((allDocuments[index].type ==
-                                                        "docx")
-                                                    ? Icon(Icons.note,
-                                                        color: Colors
-                                                            .blue.shade700)
-                                                    : Icon(
-                                                        Icons
-                                                            .table_rows_outlined,
-                                                        color: Colors
-                                                            .green.shade700)),
+                                            // (allDocuments[index].type == "pdf?")
+                                            //     ? Icon(Icons.note,
+                                            //         color: Colors.red.shade700)
+                                            //     : ((allDocuments[index].type ==
+                                            //             "docx")
+                                            //         ? Icon(Icons.note,
+                                            //             color: Colors
+                                            //                 .blue.shade700)
+                                            //         : Icon(
+                                            //             Icons
+                                            //                 .table_rows_outlined,
+                                            //             color: Colors
+                                            //                 .green.shade700)),
+
+                                            if (index < allDocuments.length && allDocuments[index].type ==
+                                                "pdf?")
+                                              Icon(Icons.note,
+                                                  color: Colors.red.shade700),
+                                            if (index < allDocuments.length && allDocuments[index].type ==
+                                                "docx")
+                                              Icon(Icons.note,
+                                                  color: Colors.blue.shade700),
+                                            if (index < allDocuments.length && allDocuments[index].type ==
+                                                "xlsx")
+                                              Icon(Icons.note,
+                                                  color: Colors.green.shade700),
+                                            if (index < allDocuments.length && allDocuments[index].type ==
+                                                "pptx")
+                                              Icon(Icons.note,
+                                                  color:
+                                                      Colors.orange.shade700),
                                             const SizedBox(width: 10),
-                                            Text((allDocuments[index]
-                                                        .fileName
-                                                        .length >
-                                                    20)
-                                                ? "${allDocuments[index].fileName.substring(0, 20)}.jpg"
-                                                : allDocuments[index].fileName),
+                                            if(index < allDocuments.length)
+                                              Text((allDocuments[index]
+                                                          .fileName
+                                                          .length >
+                                                      23)
+                                                  ? allDocuments[index]
+                                                      .fileName
+                                                      .substring(0, 23)
+                                                  : allDocuments[index].fileName),
                                           ],
                                         ),
                                       ),
@@ -350,7 +378,7 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
                                     SizedBox(height: 10),
                                     (processFinish)
                                         ? Text(
-                                            "File Uploaded to ${allDocuments[index].prediction}")
+                                            index < allDocuments.length ? "File Uploaded to ${allDocuments[index].prediction}" : "File Uploaded to __") 
                                         : const Text("File is being uploaded"),
                                   ],
                                 ),

@@ -1,6 +1,8 @@
 from io import BytesIO
 import sys
 from docx import Document
+from pptx import Presentation
+import openpyxl
 import fitz
 import requests
 import pytesseract
@@ -66,6 +68,66 @@ def read_online_word_document(url):
     else:
         # print(f"Failed to fetch Word document. Status code: {response.status_code}")
         return None
+    
+def read_online_ppt_document(url):
+    # Send a GET request to fetch the Word document
+    response = requests.get(url)
+    
+    # Check if the request was successful (status code 200)
+    if response.status_code == 200:
+        # Read the content of the Word document
+        ppt_content = response.content
+        
+        # Create a BytesIO object to work with in-memory binary data
+        ppt_file = BytesIO(ppt_content)
+        
+        # Load the Word document using python-docx
+        presentation = Presentation(ppt_file)
+        
+        # Extract text from the Word document
+        text = ""
+        # for paragraph in doc.paragraphs:
+        #     text += paragraph.text + "\n"
+        for slide in presentation.slides:
+            for shape in slide.shapes:
+                if hasattr(shape, "text"):
+                    text+=shape.text
+        
+        cleaned_str = remove_non_ascii_chars(text)
+        return cleaned_str.encode('utf-8')
+    else:
+        # print(f"Failed to fetch Word document. Status code: {response.status_code}")
+        return None
+    
+def read_online_xlsx_document(url):
+    # Send a GET request to fetch the Word document
+    response = requests.get(url)
+    
+    # Check if the request was successful (status code 200)
+    if response.status_code == 200:
+        # Read the content of the Word document
+        xlsx_content = response.content
+        
+        # Create a BytesIO object to work with in-memory binary data
+        xlsx_file = BytesIO(xlsx_content)
+        
+        # Load the Word document using python-docx
+        wb = openpyxl.load_workbook(xlsx_file)
+        
+        # Extract text from the Word document
+        text = ""
+        # for paragraph in doc.paragraphs:
+        #     text += paragraph.text + "\n"
+        for sheet_name in wb.sheetnames:
+            sheet = wb[sheet_name]
+            for row in sheet.iter_rows(values_only=True):
+                text += ' '.join(str(cell) for cell in row)
+        
+        cleaned_str = remove_non_ascii_chars(text)
+        return cleaned_str.encode('utf-8')
+    else:
+        # print(f"Failed to fetch Word document. Status code: {response.status_code}")
+        return None
 
 
 def image_to_text(url):
@@ -83,27 +145,6 @@ def image_to_text(url):
     except Exception as e:
         print(f"Error reading text from image: {e}")
         return None
-    # Send a GET request to the URL to fetch the image
-    # response = requests.get(url)
-    # windows_path = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
-    # pytesseract.tesseract_cmd = windows_path
-
-    # Check if the request was successful
-    # if response.status_code == 200:
-    #     # Convert the image content to a numpy array
-    #     image_array = np.asarray(bytearray(response.content), dtype=np.uint8)
-        
-    #     # Decode the numpy array into an OpenCV image
-    #     image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
-
-    #     # Use pytesseract to do OCR on the image
-    #     text = pytesseract.image_to_string(PIL.Image.open(image))
-
-    #     # Print the extracted text
-    #     print(text)
-    #     return text
-    # else:
-    #     print("Failed to fetch the image:", response.status_code)
 
 def remove_non_ascii_chars(input_str):
     """
@@ -131,9 +172,10 @@ if __name__ == "__main__":
         extracted_text = read_pdf_from_url(document_path)
     elif file_extension == 'docx':
         extracted_text = read_online_word_document(document_path)
+    elif file_extension == 'pptx':
+        extracted_text = read_online_ppt_document(document_path)
     elif file_extension == 'xlsx':
-        # print("The URL points to an Excel file.")
-        demo = ''
+        extracted_text = read_online_xlsx_document(document_path)
     elif file_extension == 'jpg?':
         # print("The URL points to an Excel file.")
         extracted_text = image_to_text(document_path)

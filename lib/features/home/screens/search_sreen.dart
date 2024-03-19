@@ -88,7 +88,7 @@ class _FileAndAssignmentNameSearchState
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(left: 15.0, right: 15, bottom: 15, top: 10),
+          padding: const EdgeInsets.all(10),
           child: Column(
             children: [
               Card(
@@ -232,7 +232,7 @@ class _TagsSearchState extends State<TagsSearch> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
               Card(
