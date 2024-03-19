@@ -16,7 +16,7 @@ class MyClassroomServices {
 
   Stream<List<Doc>> getMySubjectDocuments(String userId, String prediction) {
     try {
-      return _myDocs.where('userId', isEqualTo: userId).snapshots().map(
+      return _myDocs.where('userId', isEqualTo: userId).orderBy('createdAt', descending: true).snapshots().map(
         (event) {
           List<Doc> documents = [];
           for (var docs in event.docs) {
@@ -41,7 +41,7 @@ class MyClassroomServices {
   Stream<List<Doc>> getClassroomDocuments(String subjectJoiningCode) {
     try {
       return _docs
-          .where('subjectJoiningCode', isEqualTo: subjectJoiningCode)
+          .where('subjectJoiningCode', isEqualTo: subjectJoiningCode).orderBy('createdAt', descending: true)
           .snapshots()
           .map(
         (event) {
@@ -62,49 +62,4 @@ class MyClassroomServices {
       throw e.toString();
     }
   }
-
-  // Stream<List<Doc>> getDocumentsByPrediction(List<Doc> documents, String prediction) {
-  //   print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-  //   try {
-  //     return _myDocs
-  //         .where('prediction', isEqualTo: prediction, whereIn: documents.map((e) => e.fileName))
-  //         .snapshots()
-  //         .map(
-  //       (event) {
-  //         print("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-  //         List<Doc> documents = [];
-  //         for (var docs in event.docs) {
-  //           print(
-  //               "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
-  //           // Here ths "event" received is in QuerySnapshot<Object> format so the event is converted to Community model by converting the event to community model and adding to the list
-  //           print(Doc.fromMap(docs.data() as Map<String, dynamic>));
-  //           Doc doc = Doc.fromMap(docs.data() as Map<String, dynamic>);
-  //           documents.add(doc);
-  //         }
-  //         print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-  //         return documents;
-  //       },
-  //     );
-  //   } catch (e) {
-  //     print("ERror !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${e.toString()}");
-  //     throw e.toString();
-  //   }
-  // }
-
-  // Stream<List<Doc>> tempGetMySubjectDocuments(String userId, String type) {
-  //   print(type + " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-  //   return _docs.where('prediction', isEqualTo: type).snapshots().map(
-  //       // (event) => event.docs
-  //       //     .map((e) => Doc.fromMap(e.data() as Map<String, dynamic>))
-  //       //     .toList(),
-  //       (event) {
-  //     List<Doc> documents = [];
-  //     for (var docs in event.docs) {
-  //       // Here ths "event" received is in QuerySnapshot<Object> format so the event is converted to Community model by converting the event to community model and adding to the list
-  //       print(Doc.fromMap(docs.data() as Map<String, dynamic>));
-  //       documents.add(Doc.fromMap(docs.data() as Map<String, dynamic>));
-  //     }
-  //     return documents;
-  //   });
-  // }
 }

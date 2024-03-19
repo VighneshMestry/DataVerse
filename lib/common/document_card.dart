@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:ml_project/constants/constants.dart';
-import 'package:ml_project/constants/document_icons_icons.dart';
 import 'package:ml_project/directory_path.dart';
 import 'package:ml_project/features/auth/controller/auth_controller.dart';
 import 'package:ml_project/features/auth/repository/services.dart';
@@ -124,8 +123,6 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
         .read(servicesProvider.notifier)
         .contactServer(context, widget.document.fileUrl)
         .then((content) async {
-
-
       // final docId = const Uuid().v1();
       // final document = Doc(
       //     fileName: fileNames[i],
@@ -536,21 +533,22 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                   //             color: Colors.blue.shade700)
                                   //         : Icon(Icons.note,
                                   //             color: Colors.orange.shade700)),
-                                  if(widget.document.type == "pdf?") 
+                                  if (widget.document.type == "pdf?")
                                     Icon(Icons.note,
-                                            color: Colors.red.shade700),
-                                  if(widget.document.type == "docx") 
+                                        color: Colors.red.shade700),
+                                  if (widget.document.type == "docx")
                                     Icon(Icons.note,
-                                            color: Colors.blue.shade700),
-                                  if(widget.document.type == "xlsx") 
+                                        color: Colors.blue.shade700),
+                                  if (widget.document.type == "xlsx")
                                     Icon(Icons.note,
-                                            color: Colors.green.shade700),
-                                  if(widget.document.type == "pptx") 
+                                        color: Colors.green.shade700),
+                                  if (widget.document.type == "pptx")
                                     Icon(Icons.note,
-                                            color: Colors.orange.shade700),
+                                        color: Colors.orange.shade700),
                                   const SizedBox(width: 10),
                                   Text((widget.document.fileName.length > 23)
-                                      ? widget.document.fileName.substring(0, 23)
+                                      ? widget.document.fileName
+                                          .substring(0, 23)
                                       : widget.document.fileName),
                                 ],
                               ),
@@ -558,15 +556,16 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                           ),
                           const SizedBox(width: 5),
                           Container(
-                            padding: const EdgeInsets.all(5.0),
+                            padding: const EdgeInsets.all(4.0),
                             height: 40,
-                            width: 95,
-                            child: FloatingActionButton(
-                              elevation: 3,
-                              highlightElevation: 0,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30)),
-                              backgroundColor: Colors.white,
+                            width: 99,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                elevation: 3,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                              ),
                               onPressed: () {
                                 // generateConclusion();
                                 // (conclusion.length == 0) ? SizedBox() :
@@ -576,7 +575,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(30),
                                 child: const Text(
-                                  "Ask AI!",
+                                  "Ask AI",
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.black),
@@ -660,18 +659,18 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                   //             color: Colors.blue.shade700)
                                   //         : Icon(Icons.note,
                                   //             color: Colors.orange.shade700)),
-                                  if(widget.document.type == "pdf?") 
+                                  if (widget.document.type == "pdf?")
                                     Icon(Icons.note,
-                                            color: Colors.red.shade700),
-                                  if(widget.document.type == "docx") 
+                                        color: Colors.red.shade700),
+                                  if (widget.document.type == "docx")
                                     Icon(Icons.note,
-                                            color: Colors.blue.shade700),
-                                  if(widget.document.type == "xlsx") 
+                                        color: Colors.blue.shade700),
+                                  if (widget.document.type == "xlsx")
                                     Icon(Icons.note,
-                                            color: Colors.green.shade700),
-                                  if(widget.document.type == "pptx") 
+                                        color: Colors.green.shade700),
+                                  if (widget.document.type == "pptx")
                                     Icon(Icons.note,
-                                            color: Colors.orange.shade700),
+                                        color: Colors.orange.shade700),
                                   const SizedBox(width: 10),
                                   Text(widget.document.fileName,
                                       overflow: TextOverflow.ellipsis),
@@ -681,15 +680,17 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                           ),
                           const SizedBox(width: 5),
                           Container(
-                            padding: const EdgeInsets.all(5.0),
+                            padding: const EdgeInsets.all(4.0),
                             height: 40,
-                            width: 95,
-                            child: FloatingActionButton(
-                              elevation: 3,
-                              highlightElevation: 0,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30)),
-                              backgroundColor: Colors.white,
+                            width: 99,
+                            child: ElevatedButton(
+                              autofocus: true,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                elevation: 3,
+                              ),
                               onPressed: () {
                                 // generateConclusion();
                                 // (conclusion.length == 0) ? SizedBox() :
@@ -699,7 +700,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(30),
                                 child: const Text(
-                                  "Ask AI!",
+                                  "Ask AI",
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.black),

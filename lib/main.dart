@@ -51,7 +51,6 @@ class MyApp extends ConsumerWidget {
               return const MaterialApp(
                 debugShowCheckedModeBanner: false,
                 title: 'ML Application',
-                // theme: ThemeData(appBarTheme: AppBarTheme(color: Colors.black), scaffoldBackgroundColor: Colors.black),
                 home: CustomBottomNavigationBar());
             } else {
               return const MaterialApp(
