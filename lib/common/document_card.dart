@@ -38,7 +38,13 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
   late String filePath;
   late CancelToken cancelToken;
   var getPathFile = DirectoryPath();
-  late AIDoc aiDocument;
+  AIDoc aiDocument = AIDoc(
+      fileName: "",
+      aiDocId: "",
+      mainDocId: "",
+      userId: "",
+      fileUrl: "",
+      createdAt: "");
 
   startDownload() async {
     cancelToken = CancelToken();
@@ -170,17 +176,17 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
   }
 
   List<String> _splitStringIntoChunks(String largeString) {
-  final int chunkLength = 700;
-  final List<String> chunks = [];
-  for (int i = 0; i < largeString.length; i += chunkLength) {
-    int endIndex = i + chunkLength;
-    if (endIndex > largeString.length) {
-      endIndex = largeString.length;
+    final int chunkLength = 700;
+    final List<String> chunks = [];
+    for (int i = 0; i < largeString.length; i += chunkLength) {
+      int endIndex = i + chunkLength;
+      if (endIndex > largeString.length) {
+        endIndex = largeString.length;
+      }
+      chunks.add(largeString.substring(i, endIndex));
     }
-    chunks.add(largeString.substring(i, endIndex));
+    return chunks;
   }
-  return chunks;
-}
 
   void askAI() async {
     await ref
@@ -203,7 +209,8 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
             pw.Page(
               build: (pw.Context context) {
                 return pw.Center(
-                  child: pw.Text(chunk, style: const pw.TextStyle(fontSize: 24)),
+                  child:
+                      pw.Text(chunk, style: const pw.TextStyle(fontSize: 24)),
                 );
               },
             ),
@@ -239,7 +246,6 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
         setState(() {
           aiFileExists = true;
         });
-
       });
     });
   }
