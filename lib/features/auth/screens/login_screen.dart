@@ -13,7 +13,6 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  UserModel? _userModel;
 
   @override
   void initState() {
@@ -33,7 +32,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void logOut() {
     ref.read(authControllerProvider.notifier).logOut();
-    _userModel = null;
     setState(() {});
     // _auth.signOut();
   }
@@ -106,7 +104,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   height: 250,
                 ),
               ),
-              const SizedBox(height: 80),
+              const SizedBox(height: 60),
               Padding(
                 padding: const EdgeInsets.only(
                     top: 8, left: 16, bottom: 8, right: 16),

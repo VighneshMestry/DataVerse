@@ -239,7 +239,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
         setState(() {
           aiFileExists = true;
         });
-        
+
       });
     });
   }
@@ -724,7 +724,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                             color: Colors.red.shade700),
                                         const SizedBox(width: 10),
                                         Text(
-                                            (aiDocument == null)
+                                            (aiDocument.fileName.length == 0)
                                                 ? ""
                                                 : aiDocument.fileName,
                                             overflow: TextOverflow.ellipsis),
