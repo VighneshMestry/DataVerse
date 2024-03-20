@@ -55,6 +55,7 @@ class _DetailedFileUploadScreenState
             type: "pdf",
             fileUrl: singleFilePath,
             prediction: "",
+            aiFileExists: false,
             createdAt:
                 "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
             tags: _tags.text.trim().split(' '),

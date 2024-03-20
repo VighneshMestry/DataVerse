@@ -20,7 +20,7 @@ final servicesProvider = StateNotifierProvider<Services, bool>((ref) {
 // });
 
 class Services extends StateNotifier<bool> {
-  String uri = "http://192.168.0.102:4000";
+  String uri = "http://192.168.0.103:4000";
   // String  uri = "http://localhost:3000";
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -36,6 +36,10 @@ class Services extends StateNotifier<bool> {
 
   Future uploadAIDocToFirebase(AIDoc doc) async {
     return await _firestore.collection("AIDocuments").doc(doc.aiDocId).set(doc.toMap());
+  }
+
+  Future<void> updateDocWithAiField(Doc doc) async {
+    return await _myDocs.doc(doc.docId).update(doc.toMap());
   }
 
   Future<void> uploadPDF(
@@ -82,6 +86,46 @@ class Services extends StateNotifier<bool> {
     XFile? file = await imagePicker.pickImage(source: source);
     if(file != null) {
       return file;
+    }
+  }
+
+  Future contactServerForAiDoc(BuildContext context, String content) async {
+    try {
+      state = true;
+      print("Dart api run");
+      http.Response res = await http.post(
+        Uri.parse('https://mood-lens-server.onrender.com/api/v1/notes/simplify_notes'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({
+          "notes": content,
+        }),
+      );
+      state = false;
+      print("Dart api finish");
+      String stringData = "";
+      // ignore: use_build_context_synchronously
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          Map<String, dynamic> data = json.decode(res.body);
+        stringData = data['simplifiedNotes'];
+          print(
+              "STring data from dart api call&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& $stringData");
+          // print(res.body);
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text("Success")));
+        },
+      );
+      return stringData;
+    } catch (e) {
+      print("Error in the services catch block");
+      print(e.toString());
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 

@@ -17,6 +17,7 @@ import 'package:ml_project/models/document_model.dart';
 import 'package:open_file/open_file.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class DocumentCard extends ConsumerStatefulWidget {
   final Doc document;
@@ -91,7 +92,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
   aiStartDownload() async {
     cancelToken = CancelToken();
     var storePath = await getPathFile.getPath();
-    filePath = '$storePath/AI ${widget.document.fileName}';
+    filePath = '$storePath/AI ${widget.document.fileName}.pdf';
     setState(() {
       downloading = true;
       progress = 0;
@@ -164,36 +165,81 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
     await ref.read(servicesProvider.notifier).updateNameDescriptionTags(doc);
   }
 
+  void updateDocWithAiField(WidgetRef ref, Doc doc) async {
+    await ref.read(servicesProvider.notifier).updateDocWithAiField(doc);
+  }
+
+  List<String> _splitStringIntoChunks(String largeString) {
+  final int chunkLength = 700;
+  final List<String> chunks = [];
+  for (int i = 0; i < largeString.length; i += chunkLength) {
+    int endIndex = i + chunkLength;
+    if (endIndex > largeString.length) {
+      endIndex = largeString.length;
+    }
+    chunks.add(largeString.substring(i, endIndex));
+  }
+  return chunks;
+}
+
   void askAI() async {
     await ref
         .read(servicesProvider.notifier)
         .contactServer(context, widget.document.fileUrl)
         .then((content) async {
-      var storePath = await getPathFile.getPath();
-      filePath = '$storePath/AI/${widget.document.fileName}';
-      File file = File(filePath);
-      await file.writeAsString(content);
       await ref
           .read(servicesProvider.notifier)
-          .uploadPDF(context, file, "AI ${widget.document.fileName}");
+          .contactServerForAiDoc(context, content)
+          .then((value) async {
+        var storePath = await getPathFile.getPath();
+        filePath = '$storePath/AI ${widget.document.fileName}';
+        final pdf = pw.Document();
 
-      String aiFileUrl = await ref
-          .read(servicesProvider.notifier)
-          .getPdfDownloadUrl("AI ${widget.document.fileName}");
+        // Split the large string into chunks/pages
+        final List<String> chunks = _splitStringIntoChunks(value);
+        // Loop through chunks and add them to PDF
+        for (final chunk in chunks) {
+          pdf.addPage(
+            pw.Page(
+              build: (pw.Context context) {
+                return pw.Center(
+                  child: pw.Text(chunk, style: const pw.TextStyle(fontSize: 24)),
+                );
+              },
+            ),
+          );
+        }
+        File file = File(filePath);
+        print(content + "|||||||||||||||||||||||||||||||||||||||||||");
+        await file.writeAsBytes(await pdf.save());
+        await ref
+            .read(servicesProvider.notifier)
+            .uploadPDF(context, file, "AI ${widget.document.fileName}");
 
-      final AiDocId = const Uuid().v1();
-      final document = AIDoc(
-        fileName: "AI ${widget.document.fileName}",
-        aiDocId: AiDocId,
-        mainDocId: widget.document.docId,
-        userId: widget.document.userId,
-        fileUrl: aiFileUrl,
-        createdAt:
-            "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
-      );
-      await ref.read(servicesProvider.notifier).uploadAIDocToFirebase(document);
-      setState(() {
-        aiFileExists = true;
+        String aiFileUrl = await ref
+            .read(servicesProvider.notifier)
+            .getPdfDownloadUrl("AI ${widget.document.fileName}");
+
+        final AiDocId = const Uuid().v1();
+        aiDocument = AIDoc(
+          fileName: "AI ${widget.document.fileName}",
+          aiDocId: AiDocId,
+          mainDocId: widget.document.docId,
+          userId: widget.document.userId,
+          fileUrl: aiFileUrl,
+          createdAt:
+              "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
+        );
+
+        Doc document = widget.document.copyWith(aiFileExists: true);
+        updateDocWithAiField(ref, document);
+        await ref
+            .read(servicesProvider.notifier)
+            .uploadAIDocToFirebase(aiDocument);
+        setState(() {
+          aiFileExists = true;
+        });
+        
       });
     });
   }
@@ -201,7 +247,9 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
   getAiDocument(String mainDocId) async {
     aiDocument =
         await ref.read(myClassroomServicesProvider).getAiDocument(mainDocId);
-    setState(() {});
+    setState(() {
+      aiFileExists = true;
+    });
   }
 
   int predictions = -1;
@@ -224,9 +272,10 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
           userId: ref.read(userProvider)!.uid,
           docId: docId,
           subjectJoiningCode: "",
-          type: "pdf",
+          type: widget.document.type,
           fileUrl: singleFilePath,
           prediction: Constants.subjectTypes[predictions],
+          aiFileExists: false,
           createdAt:
               "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
           tags: widget.document.tags);
@@ -290,6 +339,10 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
   void initState() {
     super.initState();
     loadModel();
+    if (widget.document.aiFileExists) {
+      getAiDocument(widget.document.docId);
+      aiFileExists = true;
+    }
   }
 
   Future<void> loadModel() async {
@@ -629,10 +682,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                     borderRadius: BorderRadius.circular(30)),
                               ),
                               onPressed: () {
-                                // generateConclusion();
-                                // (conclusion.length == 0) ? SizedBox() :
-                                // setState(() {});
-                                // _showConclusionDialog(context);
+                                askAI();
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(30),
@@ -647,9 +697,65 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                           )
                         ],
                       ),
-                      const SizedBox(
-                        height: 45,
-                      ),
+                      const SizedBox(height: 10),
+                      widget.document.aiFileExists
+                          ? Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () async {
+                                    await aiCheckFileExist();
+                                    aiFileExists
+                                        ? aiOpenfile()
+                                        : aiStartDownload();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.only(
+                                        left: 15, right: 8, top: 8, bottom: 8),
+                                    height: 40,
+                                    width: 250,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.grey.shade400),
+                                        borderRadius:
+                                            BorderRadius.circular(30)),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.note,
+                                            color: Colors.red.shade700),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                            (aiDocument == null)
+                                                ? ""
+                                                : aiDocument.fileName,
+                                            overflow: TextOverflow.ellipsis),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                Container(
+                                  padding: const EdgeInsets.all(4.0),
+                                  height: 40,
+                                  width: 99,
+                                  child: ElevatedButton(
+                                    autofocus: true,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30)),
+                                      elevation: 3,
+                                    ),
+                                    onPressed: () {},
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(30),
+                                      child: Icon(Icons.mic_none_rounded),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                          : const SizedBox(height: 40),
                     ],
                   )
                 : Column(
@@ -754,7 +860,6 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                 elevation: 3,
                               ),
                               onPressed: () {
-                                getAiDocument(widget.document.docId);
                                 askAI();
                               },
                               child: ClipRRect(
@@ -771,7 +876,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      aiFileExists
+                      widget.document.aiFileExists
                           ? Row(
                               children: [
                                 GestureDetector(
@@ -796,7 +901,10 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                         Icon(Icons.note,
                                             color: Colors.red.shade700),
                                         const SizedBox(width: 10),
-                                        Text(widget.document.fileName,
+                                        Text(
+                                            (aiDocument.fileName.length == 0)
+                                                ? ""
+                                                : aiDocument.fileName,
                                             overflow: TextOverflow.ellipsis),
                                       ],
                                     ),

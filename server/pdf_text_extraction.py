@@ -33,7 +33,6 @@ def read_pdf_from_url(url):
                     img_pil = Image.frombytes("RGB", (img.width, img.height), img.samples)
                     myconfig = r"--psm 6 --oem 3"
                     text += pytesseract.image_to_string(img_pil, lang='eng', config=myconfig)
-                    print("Printing the images_______________")
             else:
                 text += page.get_text().encode("utf-8").decode("utf-8") 
         text = text.encode('utf-8', 'ignore').decode('utf-8') 
@@ -167,7 +166,7 @@ if __name__ == "__main__":
     file_extension = file_extension[0:4]
     
     # file_extension =  file_extension.lower()
-    print("File extension is " + file_extension)
+    # print("File extension is " + file_extension)
     if file_extension == 'pdf?':
         extracted_text = read_pdf_from_url(document_path)
     elif file_extension == 'docx':

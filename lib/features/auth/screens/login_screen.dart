@@ -20,7 +20,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.initState();
   }
 
-void signIn(WidgetRef ref) {
+  void signIn(WidgetRef ref) {
     ref.read(authControllerProvider.notifier).signInWithGoogle(context);
     setState(() {
       print("done");
@@ -50,24 +50,110 @@ void signIn(WidgetRef ref) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _userModel != null
-                ? Text(_userModel!.name)
-                : ElevatedButton(
-                    onPressed: () {
-                      signIn(ref);
-                      
-                    },
-                    child: Text("Login"),
-                  ),
-            ElevatedButton(
-              onPressed: () => logOut(),
-              child: Text("Logout"),
+      appBar: AppBar(
+        title: Image.asset(
+          "assets/logo.jpg",
+          height: 40,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {},
+            child: const Text(
+              'Skip',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ],
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                  top: 90,
+                  left: 16,
+                ),
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: 'Hello \nThere',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 60,
+                            fontWeight: FontWeight.w900),
+                      ),
+                      TextSpan(
+                        text: '.',
+                        style: TextStyle(
+                            color: Colors.blue.shade700,
+                            fontSize: 70,
+                            fontWeight: FontWeight.w900),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset(
+                  "assets/logo.jpg",
+                  height: 250,
+                ),
+              ),
+              const SizedBox(height: 80),
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 8, left: 16, bottom: 8, right: 16),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          signIn(ref);
+                        },
+                        icon: Image.asset(
+                          "assets/google.png",
+                          width: 35,
+                        ),
+                        label: Text(
+                          'Continue with Google',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.blue.shade700,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          minimumSize: const Size(double.infinity, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () {
+                        // Navigator.pushNamed(context, SignupScreen.routeName);
+                        // print('done');
+                      },
+                      child: const Text(
+                        "Don't have an account? SignUp",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

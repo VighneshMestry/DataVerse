@@ -133,6 +133,7 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
                   .substring(0, 4),
               fileUrl: singleFilePath,
               prediction: Constants.subjectTypes[predictions],
+              aiFileExists: false,
               createdAt:
                   "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
               tags: []);

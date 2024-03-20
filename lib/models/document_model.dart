@@ -1,3 +1,8 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+
 class Doc {
   final String fileName;
   final String assignmentTitle;
@@ -9,6 +14,7 @@ class Doc {
   final String fileUrl;
   final String prediction;
   final String createdAt;
+  final bool aiFileExists;
   final List<String> tags;
   Doc({
     required this.fileName,
@@ -21,6 +27,7 @@ class Doc {
     required this.fileUrl,
     required this.prediction,
     required this.createdAt,
+    required this.aiFileExists,
     required this.tags,
   });
 
@@ -35,6 +42,7 @@ class Doc {
     String? fileUrl,
     String? prediction,
     String? createdAt,
+    bool? aiFileExists,
     List<String>? tags,
   }) {
     return Doc(
@@ -48,6 +56,7 @@ class Doc {
       fileUrl: fileUrl ?? this.fileUrl,
       prediction: prediction ?? this.prediction,
       createdAt: createdAt ?? this.createdAt,
+      aiFileExists: aiFileExists ?? this.aiFileExists,
       tags: tags ?? this.tags,
     );
   }
@@ -64,6 +73,7 @@ class Doc {
       'fileUrl': fileUrl,
       'prediction': prediction,
       'createdAt': createdAt,
+      'aiFileExists': aiFileExists,
       'tags': tags,
     };
   }
@@ -80,8 +90,13 @@ class Doc {
       fileUrl: map['fileUrl'] as String,
       prediction: map['prediction'] as String,
       createdAt: map['createdAt'] as String,
-      tags: List<String>.from((map['tags']))
+      aiFileExists: map['aiFileExists'] as bool,
+      tags: List<String>.from((map['tags'])),
     );
   }
 
+
+  String toJson() => json.encode(toMap());
+
+  factory Doc.fromJson(String source) => Doc.fromMap(json.decode(source) as Map<String, dynamic>);
 }
