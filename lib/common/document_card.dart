@@ -666,6 +666,8 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                   if (widget.document.type == "pptx")
                                     Icon(Icons.note,
                                         color: Colors.orange.shade700),
+                                  if (widget.document.type == "img")
+                                    Icon(Icons.image),
                                   const SizedBox(width: 10),
                                   Text((widget.document.fileName.length > 23)
                                       ? widget.document.fileName
@@ -732,7 +734,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                         Text(
                                             (aiDocument.fileName.length == 0)
                                                 ? ""
-                                                : aiDocument.fileName,
+                                                : (aiDocument.fileName.length > 23) ? aiDocument.fileName.substring(0,23) : aiDocument.fileName,
                                             overflow: TextOverflow.ellipsis),
                                       ],
                                     ),
@@ -825,14 +827,6 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                   borderRadius: BorderRadius.circular(30)),
                               child: Row(
                                 children: [
-                                  // (widget.document.type == "pdf")
-                                  //     ? Icon(Icons.note,
-                                  //         color: Colors.red.shade700)
-                                  //     : ((widget.document.type == "docx")
-                                  //         ? Icon(Icons.note,
-                                  //             color: Colors.blue.shade700)
-                                  //         : Icon(Icons.note,
-                                  //             color: Colors.orange.shade700)),
                                   if (widget.document.type == "pdf?")
                                     Icon(Icons.note,
                                         color: Colors.red.shade700),
@@ -845,9 +839,13 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                   if (widget.document.type == "pptx")
                                     Icon(Icons.note,
                                         color: Colors.orange.shade700),
+                                  if (widget.document.type == "img")
+                                    const Icon(Icons.image),
                                   const SizedBox(width: 10),
-                                  Text(widget.document.fileName,
-                                      overflow: TextOverflow.ellipsis),
+                                  Text((widget.document.fileName.length > 23)
+                                      ? widget.document.fileName
+                                          .substring(0, 23)
+                                      : widget.document.fileName),
                                 ],
                               ),
                             ),
@@ -910,7 +908,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                         Text(
                                             (aiDocument.fileName.length == 0)
                                                 ? ""
-                                                : aiDocument.fileName,
+                                                : (aiDocument.fileName.length > 23) ? aiDocument.fileName.substring(0,23) : aiDocument.fileName,
                                             overflow: TextOverflow.ellipsis),
                                       ],
                                     ),

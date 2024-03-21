@@ -55,23 +55,24 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
         .then((content) async {
       final predictions = predict(content);
       final docId = const Uuid().v1();
-      await ref.read(servicesProvider.notifier).uploadToFirebase(
-            Doc(
+      Doc document = Doc(
                 fileName: scannedDocId,
                 assignmentTitle: "New Assignment",
-                assigmentDescription: "",
+                assigmentDescription: "Assignment Description",
                 userId: ref.read(userProvider)!.uid,
                 docId: docId,
                 subjectJoiningCode: "",
-                type: "pdf",
+                type: "img",
                 fileUrl: singleFilePath,
                 prediction: Constants.subjectTypes[predictions],
                 aiFileExists: false,
                 createdAt:
                     "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
-                tags: []),
-          );
+                tags: []);
+      await ref.read(servicesProvider.notifier).uploadToFirebase(document);
       setState(() {});
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Image uploaded to ${document.prediction}")));
     }).catchError((error) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(error.toString())));

@@ -46,7 +46,20 @@ class _SubjectDocsDisplyScreenState
                               height: 1,
                             ),
                             const SizedBox(height: 20),
-                            ListView.builder(
+                            (data.isEmpty)
+                              ? Center(
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(height: 210),
+                                      Image.asset("assets/nothingToSeeHere.png",
+                                          height: 200),
+                                      const Text("Nothing to see here!",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                    ],
+                                  ),
+                                )
+                              : ListView.builder(
                               physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: data.length,

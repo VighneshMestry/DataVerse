@@ -362,15 +362,18 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
                                               Icon(Icons.note,
                                                   color:
                                                       Colors.orange.shade700),
+                                            if (index < allDocuments.length && allDocuments[index].type ==
+                                                "img")
+                                    const Icon(Icons.image),
                                             const SizedBox(width: 10),
                                             if(index < allDocuments.length)
                                               Text((allDocuments[index]
                                                           .fileName
                                                           .length >
-                                                      23)
+                                                      20)
                                                   ? allDocuments[index]
                                                       .fileName
-                                                      .substring(0, 23)
+                                                      .substring(0, 20)
                                                   : allDocuments[index].fileName),
                                           ],
                                         ),
