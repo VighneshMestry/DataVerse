@@ -5,7 +5,7 @@ const express = require("express");
 const { spawn } = require("child_process");
 
 // IMPORTS FROM OTHER FILES
-const router = require("./routes");
+const router = require("../routes");
 
 //INIT
 //If we initialize this express (which we did) then we also have to listen it
@@ -50,7 +50,7 @@ app.post("/demo", async (req, res) => {
 
     let visited = false;
 
-    const childPython = spawn("python", ["pdf_text_extraction.py", link]);
+    const childPython = spawn("python", ["scripts/pdf_text_extraction.py", link]);
 
     let responseData;
 

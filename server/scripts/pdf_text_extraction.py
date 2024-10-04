@@ -2,7 +2,7 @@ from io import BytesIO
 import sys
 from docx import Document
 from pptx import Presentation
-import openpyxl
+import openpyxl # For excel
 import fitz
 import requests
 import pytesseract
@@ -138,7 +138,7 @@ def image_to_text(url):
 
         # Open the image from binary data
         with Image.open(BytesIO(response.content)) as img:
-            # Use pytesseract to do OCR on the image
+            # Use pytesseract to do OCR(Optical Character Recognition) on the image
             text = pytesseract.image_to_string(img)
             return text.strip()  # Remove leading/trailing whitespace
     except Exception as e:
