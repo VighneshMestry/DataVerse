@@ -1,3 +1,14 @@
+# docx==0.8.11
+# python-pptx==0.6.18
+# openpyxl==3.0.9
+# PyMuPDF==1.19.6
+# requests==2.26.0
+# pytesseract==0.3.8
+# Pillow==8.4.0
+# opencv-python==4.5.3.20210920
+# numpy==1.21.2
+
+
 from io import BytesIO
 import sys
 from docx import Document
@@ -11,7 +22,7 @@ from PIL import Image
 def read_pdf_from_url(url):
     # Fetch the content of the PDF from the URL
     response = requests.get(url)
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    # pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
     
     # Check if the request was successful
     if response.status_code == 200:
@@ -132,7 +143,7 @@ def read_online_xlsx_document(url):
 def image_to_text(url):
     try:
         # Download the image from the URL
-        pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+        # pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
         response = requests.get(url)
         response.raise_for_status()  # Raise an exception if download fails
 

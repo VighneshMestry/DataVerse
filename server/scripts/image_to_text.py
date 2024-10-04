@@ -26,8 +26,6 @@ import cv2
 import requests
 import numpy as np
 import pytesseract
-from PIL import Image
-from io import BytesIO
 
 # URL of the online image
 image_url = "https://i.stack.imgur.com/IvV2y.png"
