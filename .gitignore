@@ -34,7 +34,7 @@ migrate_working_dir/
 # Symbolication related
 app.*.symbols
 /assets/
-pubspec.yaml
+# pubspec.yaml
 # Obfuscation related
 app.*.map.json
 
