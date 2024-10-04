@@ -5,5 +5,5 @@ PyMuPDF==1.19.6
 requests==2.26.0
 pytesseract==0.3.8
 Pillow==8.4.0
-opencv-python==4.5.3.20210920
+opencv-python==4.5.5.64
 numpy==1.21.2
