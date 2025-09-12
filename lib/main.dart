@@ -50,12 +50,12 @@ class MyApp extends ConsumerWidget {
               getData(ref, data);
               return const MaterialApp(
                 debugShowCheckedModeBanner: false,
-                title: 'ML Application',
+                title: 'DataVerse',
                 home: CustomBottomNavigationBar());
             } else {
               return const MaterialApp(
                 debugShowCheckedModeBanner: false,
-                title: 'ML Application',
+                title: 'DataVerse',
                 // theme: ThemeData(appBarTheme: AppBarTheme(color: Colors.black), scaffoldBackgroundColor: Colors.black),
                 home: LoginScreen(),
               );
