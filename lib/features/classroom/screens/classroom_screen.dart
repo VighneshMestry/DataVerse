@@ -74,7 +74,7 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
                     //   // appStoreLink: 'itms-apps://itunes.apple.com/us/app/pulse-secure/id945832041',
                     //   // openStore: false
                     // );
-                    await DeviceApps.openApp('com.whatsapp');
+                    // await DeviceApps.openApp('com.whatsapp');
 
                     // Enter the package name of the App you want to open and for iOS add the URLscheme to the Info.plist file.
                     // The `openStore` argument decides whether the app redirects to PlayStore or AppStore.

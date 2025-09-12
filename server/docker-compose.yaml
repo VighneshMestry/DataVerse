@@ -1,0 +1,13 @@
+services:
+
+  dataverse:
+    build: ./
+    container_name: dataverse_node_server
+    volumes: 
+      - .:/app
+      - /app/node_modules
+    ports: 
+      - "4000:4000"
+    environment:
+      - "PORT=4000"
+    command: npm start

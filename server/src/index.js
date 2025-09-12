@@ -50,7 +50,7 @@ app.post("/demo", async (req, res) => {
 
     let visited = false;
 
-    const childPython = spawn("python", ["scripts/pdf_text_extraction.py", link]);
+    const childPython = spawn("python3", ["scripts/pdf_text_extraction.py", link]);
 
     let responseData;
 

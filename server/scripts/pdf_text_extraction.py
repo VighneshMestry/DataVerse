@@ -6,7 +6,6 @@
 # pytesseract==0.3.8
 # Pillow==8.4.0
 # opencv-python==4.5.3.20210920
-# numpy==1.21.2
 
 
 from io import BytesIO
