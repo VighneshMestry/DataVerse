@@ -345,28 +345,33 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
                                             //             color: Colors
                                             //                 .green.shade700)),
 
-                                            if (index < allDocuments.length && allDocuments[index].type ==
-                                                "pdf?")
+                                            if (index < allDocuments.length &&
+                                                allDocuments[index].type ==
+                                                    "pdf?")
                                               Icon(Icons.note,
                                                   color: Colors.red.shade700),
-                                            if (index < allDocuments.length && allDocuments[index].type ==
-                                                "docx")
+                                            if (index < allDocuments.length &&
+                                                allDocuments[index].type ==
+                                                    "docx")
                                               Icon(Icons.note,
                                                   color: Colors.blue.shade700),
-                                            if (index < allDocuments.length && allDocuments[index].type ==
-                                                "xlsx")
+                                            if (index < allDocuments.length &&
+                                                allDocuments[index].type ==
+                                                    "xlsx")
                                               Icon(Icons.note,
                                                   color: Colors.green.shade700),
-                                            if (index < allDocuments.length && allDocuments[index].type ==
-                                                "pptx")
+                                            if (index < allDocuments.length &&
+                                                allDocuments[index].type ==
+                                                    "pptx")
                                               Icon(Icons.note,
                                                   color:
                                                       Colors.orange.shade700),
-                                            if (index < allDocuments.length && allDocuments[index].type ==
-                                                "img")
-                                    const Icon(Icons.image),
+                                            if (index < allDocuments.length &&
+                                                allDocuments[index].type ==
+                                                    "img")
+                                              const Icon(Icons.image),
                                             const SizedBox(width: 10),
-                                            if(index < allDocuments.length)
+                                            if (index < allDocuments.length)
                                               Text((allDocuments[index]
                                                           .fileName
                                                           .length >
@@ -374,16 +379,19 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
                                                   ? allDocuments[index]
                                                       .fileName
                                                       .substring(0, 20)
-                                                  : allDocuments[index].fileName),
+                                                  : allDocuments[index]
+                                                      .fileName),
                                           ],
                                         ),
                                       ),
                                     ),
                                     SizedBox(height: 10),
                                     (processFinish)
-                                        ? Text(
-                                            index < allDocuments.length ? "File Uploaded to ${allDocuments[index].prediction}" : "File Uploaded to __") 
-                                        : const Text("File is being uploaded..."),
+                                        ? Text(index < allDocuments.length
+                                            ? "File Uploaded to ${allDocuments[index].prediction}"
+                                            : "File Uploaded to __")
+                                        : const Text(
+                                            "File is being uploaded..."),
                                   ],
                                 ),
                               ),
@@ -422,16 +430,16 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
                     ),
                     SizedBox(height: 15),
                     Text(
+                        "* The uploading can take upto few seconds initially to spin up the hosted instance.",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 10),
+                    Text(
                         "* Any file format can be uploaded (.pdf, .docx, .pptx, .xlsx, .jpg, .png)",
                         style: TextStyle(fontSize: 16)),
                     SizedBox(height: 10),
-                    Text(
-                        "* The uploading can take upto few seconds if the network connection is slow.",
-                        style: TextStyle(fontSize: 16)),
-                    SizedBox(height: 10),
                     Text("If you have trouble uploading the documents,",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500)),
+                        style: TextStyle(fontSize: 16)),
                     Text("Contact us",
                         style: TextStyle(
                             fontSize: 16,

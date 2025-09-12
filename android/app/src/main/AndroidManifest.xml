@@ -10,7 +10,7 @@
         <package android:name="com.whatsapp" />
     </queries>
     <application
-        android:label="ml_project"
+        android:label="DataVerse"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true">
