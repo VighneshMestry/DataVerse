@@ -24,6 +24,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(router);
+app.options("/demo", cors());
 // app.use(bodyParser.json());
 // app.use(authRouter);
 
