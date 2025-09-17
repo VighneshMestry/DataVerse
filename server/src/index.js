@@ -14,7 +14,14 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(router);
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:57253",              // for local dev
+    "" // your production frontend
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 //middleware
 // CLIENT -> middleware -> SERVER -> CLIENT
 app.use(express.json());
