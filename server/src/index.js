@@ -1,6 +1,7 @@
 // "C:/Users/Vighnesh/Flutter/Projects/ml_project/assets/demo.pdf"
 // IMPORTS FROM PACKAGES
 const express = require("express");
+const cors = require("cors");
 // const bodyParser = require('body-parser');
 const { spawn } = require("child_process");
 
@@ -13,6 +14,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(router);
+app.use(cors());
 //middleware
 // CLIENT -> middleware -> SERVER -> CLIENT
 app.use(express.json());
