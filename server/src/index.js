@@ -16,10 +16,15 @@ const PORT = process.env.PORT || 4000;
 //middleware
 // CLIENT -> middleware -> SERVER -> CLIENT
 app.use(cors({
-  origin: [
-    "http://localhost:57253",              // for local dev
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like Postman), localhost, or your deployed frontend
+    if (!origin || origin.includes("localhost") || origin === "https://dataverse-frontend.vercel.app") {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.use(express.json());
