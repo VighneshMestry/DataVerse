@@ -13,18 +13,17 @@ const router = require("../routes");
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(router);
+//middleware
+// CLIENT -> middleware -> SERVER -> CLIENT
 app.use(cors({
   origin: [
     "http://localhost:57253",              // for local dev
-    "" // your production frontend
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
-//middleware
-// CLIENT -> middleware -> SERVER -> CLIENT
 app.use(express.json());
+app.use(router);
 // app.use(bodyParser.json());
 // app.use(authRouter);
 
