@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 4000;
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like Postman), localhost, or your deployed frontend
-    if (!origin || origin.includes("localhost") || origin === "https://dataverse-frontend.vercel.app") {
+    if (!origin || origin.includes("localhost") || origin === "https://dataverse-k9ff.onrender.com") {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
