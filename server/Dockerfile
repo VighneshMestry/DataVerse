@@ -3,6 +3,7 @@ FROM node:18-slim AS builder
 
 RUN apt-get update && apt-get install -y \
     python3 python3-pip python3.11-venv build-essential \
+    tesseract-ocr libtesseract-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Create virtual env and install Python deps
@@ -23,6 +24,7 @@ FROM node:18-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
+    tesseract-ocr libtesseract-dev \ 
     && rm -rf /var/lib/apt/lists/*
 
 # Copy venv from builder

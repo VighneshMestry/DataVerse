@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +40,7 @@ class MyApp extends ConsumerWidget {
         .watch(authControllerProvider.notifier)
         .getUserData(data.uid)
         .first;
+        log("main.dart");
     ref.read(userProvider.notifier).update((state) => userModel);
   }
 

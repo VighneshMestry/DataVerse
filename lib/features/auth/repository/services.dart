@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -20,22 +22,24 @@ final servicesProvider = StateNotifierProvider<Services, bool>((ref) {
 // });
 
 class Services extends StateNotifier<bool> {
-    String uri = "https://dataverse-po8o.onrender.com";
-  // String uri = "http://192.168.0.102:4000";    // Development url
+  // String uri = "https://dataverse-po8o.onrender.com";
+  String uri = "http://localhost:4000";    // Development url
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Services() : super(false);
 
-  CollectionReference get _myDocs =>
-      _firestore.collection("myDocuments");
+  CollectionReference get _myDocs => _firestore.collection("myDocuments");
 
   Future uploadToFirebase(Doc doc) async {
     return await _myDocs.doc(doc.docId).set(doc.toMap());
   }
 
   Future uploadAIDocToFirebase(AIDoc doc) async {
-    return await _firestore.collection("AIDocuments").doc(doc.aiDocId).set(doc.toMap());
+    return await _firestore
+        .collection("AIDocuments")
+        .doc(doc.aiDocId)
+        .set(doc.toMap());
   }
 
   Future<void> updateDocWithAiField(Doc doc) async {
@@ -61,12 +65,29 @@ class Services extends StateNotifier<bool> {
     }
   }
 
+  Future<void> uploadPDFWeb(
+      BuildContext context, Uint8List fileBytes, String name) async {
+    try {
+      Reference storageReference =
+          FirebaseStorage.instance.ref().child('docs/$name');
+
+      UploadTask uploadTask = storageReference.putData(fileBytes);
+
+      await uploadTask.whenComplete(() => print('File Uploaded (Web)'));
+    } catch (e) {
+      print('Error uploading PDF on Web: $e');
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
   Future<void> updateNameDescriptionTags(Doc doc) async {
     return await _myDocs.doc(doc.docId).update(doc.toMap());
   }
 
   Future<FilePickerResult?> pickFile(BuildContext context) {
-    return FilePicker.platform.pickFiles(allowMultiple: true);
+    return FilePicker.platform.pickFiles(allowMultiple: true, withData: kIsWeb);
   }
 
   Future<String> getPdfDownloadUrl(String name) async {
@@ -81,10 +102,10 @@ class Services extends StateNotifier<bool> {
     return downloadUrl;
   }
 
-  scanImages (ImageSource source) async {
+  scanImages(ImageSource source) async {
     final ImagePicker imagePicker = ImagePicker();
     XFile? file = await imagePicker.pickImage(source: source);
-    if(file != null) {
+    if (file != null) {
       return file;
     }
   }
@@ -94,7 +115,8 @@ class Services extends StateNotifier<bool> {
       state = true;
       print("Dart api run");
       http.Response res = await http.post(
-        Uri.parse('https://mood-lens-server.onrender.com/api/v1/notes/simplify_notes'),
+        Uri.parse(
+            'https://mood-lens-server.onrender.com/api/v1/notes/simplify_notes'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -111,7 +133,7 @@ class Services extends StateNotifier<bool> {
         context: context,
         onSuccess: () {
           Map<String, dynamic> data = json.decode(res.body);
-        stringData = data['simplifiedNotes'];
+          stringData = data['simplifiedNotes'];
           print(
               "STring data from dart api call&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& $stringData");
           // print(res.body);
@@ -122,7 +144,7 @@ class Services extends StateNotifier<bool> {
       return stringData;
     } catch (e) {
       print("Error in the services catch block");
-      print(e.toString());
+      print(e);
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
@@ -165,6 +187,7 @@ class Services extends StateNotifier<bool> {
               .showSnackBar(const SnackBar(content: Text("Success")));
         },
       );
+      log("Returning the data");
       return stringData;
     } catch (e) {
       print("Error in the services catch block");

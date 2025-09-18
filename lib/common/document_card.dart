@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:html' as html;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -76,6 +78,20 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
         downloading = false;
       });
     }
+  }
+
+  fileDownloadForWeb() async {
+    final downloadUrl = await ref
+        .read(servicesProvider.notifier)
+        .getPdfDownloadUrl(widget.document.fileName);
+    
+    final anchor = html.AnchorElement(href: downloadUrl)
+      ..setAttribute("download", widget.document.fileName) // ✅ Forces download
+      ..target = 'blank';
+    html.document.body!.append(anchor);
+    anchor.click();
+    anchor.remove(); // cleanup
+    return;
   }
 
   openfile() {
@@ -601,6 +617,10 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                         children: [
                           GestureDetector(
                             onTap: () async {
+                              if (kIsWeb) {
+                                fileDownloadForWeb();
+                                return;
+                              }
                               await checkFileExist();
                               fileExists ? openfile() : startDownload();
                               if (downloading) {
@@ -734,7 +754,11 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                         Text(
                                             (aiDocument.fileName.length == 0)
                                                 ? ""
-                                                : (aiDocument.fileName.length > 23) ? aiDocument.fileName.substring(0,23) : aiDocument.fileName,
+                                                : (aiDocument.fileName.length >
+                                                        23)
+                                                    ? aiDocument.fileName
+                                                        .substring(0, 23)
+                                                    : aiDocument.fileName,
                                             overflow: TextOverflow.ellipsis),
                                       ],
                                     ),
@@ -782,6 +806,10 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                         children: [
                           GestureDetector(
                             onTap: () async {
+                              if (kIsWeb) {
+                                fileDownloadForWeb();
+                                return;
+                              }
                               await checkFileExist();
                               fileExists ? openfile() : startDownload();
                               if (downloading) {
@@ -908,7 +936,11 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                                         Text(
                                             (aiDocument.fileName.length == 0)
                                                 ? ""
-                                                : (aiDocument.fileName.length > 23) ? aiDocument.fileName.substring(0,23) : aiDocument.fileName,
+                                                : (aiDocument.fileName.length >
+                                                        23)
+                                                    ? aiDocument.fileName
+                                                        .substring(0, 23)
+                                                    : aiDocument.fileName,
                                             overflow: TextOverflow.ellipsis),
                                       ],
                                     ),

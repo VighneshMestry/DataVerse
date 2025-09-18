@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,13 +38,11 @@ class AuthRepository {
       late UserModel? _userModel;
 
       final googleAuth = await googleUser?.authentication;
-
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
       userCredential = await _auth.signInWithCredential(credential);
-
       // UserModel userModel;
 
       if (userCredential.additionalUserInfo!.isNewUser) {

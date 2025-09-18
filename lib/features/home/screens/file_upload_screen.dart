@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -95,20 +97,26 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
 
   void callPickFiles() async {
     final result = await ref.read(servicesProvider.notifier).pickFile(context);
-    files = result!.paths.map((path) => File(path!)).toList();
-    fileNames += result.names.map((name) => name!).toList();
-    totalProgress = files.length;
-    for (int i = 0; i < files.length; i++) {
-      if (!context.mounted) {
-        return;
-      } else {
-        await ref
-            .read(servicesProvider.notifier)
-            .uploadPDF(context, files[i], fileNames[i]);
+    if (result == null) return;
+    if (kIsWeb) {
+      // Web → use bytes
+      totalProgress = result.files.length;
+      for (int i = 0; i < result.files.length; i++) {
+        final fileBytes = result.files[i].bytes;
+        final fileName = result.files[i].name;
+        fileNames.add(fileName);
 
-        String singleFilePath = await ref
+        if (fileBytes == null) continue;
+
+        await ref.read(servicesProvider.notifier).uploadPDFWeb(
+              context,
+              fileBytes,
+              fileName,
+            );
+        final singleFilePath = await ref
             .read(servicesProvider.notifier)
-            .getPdfDownloadUrl(fileNames[i]);
+            .getPdfDownloadUrl(fileName);
+
         if (!context.mounted) return;
         await ref
             .read(servicesProvider.notifier)
@@ -117,29 +125,39 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
           downloadUrls.add(singleFilePath);
           fileContent.add(content);
           predictions = predict(content);
-          print(
-              "$predictions PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
           final docId = const Uuid().v1();
+          print(fileName);
+          print(path
+                .extension(singleFilePath)
+                .replaceAll('.', '')
+                .substring(0, 4));
+          print(ref.read(userProvider)!.uid);
+          print(docId);
+          
+          print(singleFilePath);
+          print(Constants.subjectTypes[predictions]);
+          
           final document = Doc(
-              fileName: fileNames[i],
-              assignmentTitle: "New Assignment",
-              assigmentDescription: "Assignment Description",
-              userId: ref.read(userProvider)!.uid,
-              docId: docId,
-              subjectJoiningCode: "",
-              type: path
-                  .extension(singleFilePath)
-                  .replaceAll('.', '')
-                  .substring(0, 4),
-              fileUrl: singleFilePath,
-              prediction: Constants.subjectTypes[predictions],
-              aiFileExists: false,
-              createdAt:
-                  "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
-              tags: []);
+            fileName: fileName,
+            assignmentTitle: "New Assignment",
+            assigmentDescription: "Assignment Description",
+            userId: ref.read(userProvider)!.uid,
+            docId: docId,
+            subjectJoiningCode: "",
+            type: path
+                .extension(singleFilePath)
+                .replaceAll('.', '')
+                .substring(0, 4),
+            fileUrl: singleFilePath,
+            prediction: Constants.subjectTypes[predictions],
+            aiFileExists: false,
+            createdAt:
+                "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
+            tags: [],
+          );
+          
+
           allDocuments.add(document);
-          print(document.type);
-          print("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}");
           await ref.read(servicesProvider.notifier).uploadToFirebase(document);
           setState(() {
             success = true;
@@ -149,6 +167,66 @@ class _FileUploadScreenState extends ConsumerState<FileUploadScreen> {
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(error.toString())));
         });
+      }
+    } else {
+      files = result.paths.map((path) => File(path!)).toList();
+      fileNames += result.names.map((name) => name!).toList();
+      totalProgress = files.length;
+      for (int i = 0; i < files.length; i++) {
+        if (!context.mounted) {
+          return;
+        } else {
+          await ref
+              .read(servicesProvider.notifier)
+              .uploadPDF(context, files[i], fileNames[i]);
+
+          String singleFilePath = await ref
+              .read(servicesProvider.notifier)
+              .getPdfDownloadUrl(fileNames[i]);
+          if (!context.mounted) return;
+          await ref
+              .read(servicesProvider.notifier)
+              .contactServer(context, singleFilePath)
+              .then((content) async {
+            downloadUrls.add(singleFilePath);
+            fileContent.add(content);
+            predictions = predict(content);
+            print(
+                "$predictions PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
+            final docId = const Uuid().v1();
+            final document = Doc(
+                fileName: fileNames[i],
+                assignmentTitle: "New Assignment",
+                assigmentDescription: "Assignment Description",
+                userId: ref.read(userProvider)!.uid,
+                docId: docId,
+                subjectJoiningCode: "",
+                type: path
+                    .extension(singleFilePath)
+                    .replaceAll('.', '')
+                    .substring(0, 4),
+                fileUrl: singleFilePath,
+                prediction: Constants.subjectTypes[predictions],
+                aiFileExists: false,
+                createdAt:
+                    "${DateFormat("dd-MM-yyyy").format(DateTime.now())} ${TimeOfDay.now()}",
+                tags: []);
+            allDocuments.add(document);
+            print(document.type);
+            print(
+                "{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}");
+            await ref
+                .read(servicesProvider.notifier)
+                .uploadToFirebase(document);
+            setState(() {
+              success = true;
+              progress = i + 1;
+            });
+          }).catchError((error) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(error.toString())));
+          });
+        }
       }
     }
     setState(() {
